@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/AssignmentPRJ">
+  <Resource auth="Container" driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver" name="DSBlink" password="20122001" type="javax.sql.DataSource" url="jdbc:sqlserver://localhost:1433;databaseName=LOGIN" username="sa"/>
+</Context>
