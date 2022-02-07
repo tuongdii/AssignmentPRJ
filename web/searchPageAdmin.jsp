@@ -16,22 +16,9 @@
     </head>
     <body>
         <font color="red">
-        Welcome, ${sessionScope.USER.lastname}
-        <%-- <% 
-                Cookie[] cookies = request.getCookies();
-                if(cookies != null){
-                    String username = "";
-                    for(Cookie cookie : cookies){
-                        String temp = cookie.getName();
-                        if(!temp.equals("JSESSIONID")){
-                            username = temp;
-                        }
-                    }
-                    %>
-                    Welcome, <%= username %>
-            <%
-                }
-            %> --%>
+        <c:if test="${not empty sessionScope.USER.lastname}">
+            Welcome, ${sessionScope.USER.lastname}
+        </c:if>
         </font>
         <h1>Search Page</h1>
         <form action="searchAccountAction">
@@ -58,7 +45,7 @@
                     </thead>
                     <tbody>
                         <c:forEach var="dto" items="${result}" varStatus="counter">
-                        <form action="searchAccountAction">
+                        <form action="updateAccountAction" method="POST">
                             <tr>
                                 <td>
                                     ${counter.count}

@@ -20,7 +20,9 @@ import javax.servlet.http.HttpSession;
  * @author DELL
  */
 public class RemoveItemsFromCartServlet extends HttpServlet {
+
     private final String VIEW_CART_PAGE = "viewCart";
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -46,19 +48,19 @@ public class RemoveItemsFromCartServlet extends HttpServlet {
                         //4. get all selected Items
                         String[] removedItems = request.getParameterValues("chkItem");
                         if (removedItems != null) {
-                                //5. Remove each iteam from cart
-                                for (String items : removedItems) {
-                                     cart.removeItemFromCart(items);
+                            //5. Remove each iteam from cart
+                            for (String items : removedItems) {
+                                cart.removeItemFromCart(items);
                             }
-                                session.setAttribute("CART", cart);
+                            session.setAttribute("CART", cart);
                         }
                     }
                 }
             }
 
         } finally {
-              //6. refresh = call view cart again
-              response.sendRedirect(VIEW_CART_PAGE);
+            //6. refresh = call view cart again
+            response.sendRedirect(VIEW_CART_PAGE);
         }
     }
 

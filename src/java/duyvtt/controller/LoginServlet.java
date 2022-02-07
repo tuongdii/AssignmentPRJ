@@ -7,9 +7,13 @@ package duyvtt.controller;
 
 import duyvtt.registration.RegistrationDAO;
 import duyvtt.registration.RegistrationDTO;
+import duyvtt.utils.Helper;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -37,7 +41,7 @@ public class LoginServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException{
+            throws ServletException, IOException, NoSuchAlgorithmException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
 
@@ -46,28 +50,29 @@ public class LoginServlet extends HttpServlet {
         String url = INVALID_PAGE;
 
         try {
+            String hashedPassword = Helper.hashString(password);
             //call DAO -> new DAO object & call method of DAO
             RegistrationDAO dao = new RegistrationDAO();
-            RegistrationDTO result = dao.checkLogin(username, password);
+            RegistrationDTO result = dao.checkLogin(username, hashedPassword);
             if (result != null) {
                 url = SEARCH_PAGE;
-                
+
                 // Create session and add RegistrationDTO attribute
                 HttpSession session = request.getSession();
                 session.setAttribute("USER", result);
-                
+
                 //create account cookie for remind user
                 Cookie cookie = new Cookie(username, password);
                 cookie.setMaxAge(-1);   //means cookie existing until close browser
                 response.addCookie(cookie);
-                
+
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         } catch (NamingException ex) {
             ex.printStackTrace();
         } finally {
-             response.sendRedirect(url);
+            response.sendRedirect(url);
             //RequestDispatcher rd = request.getRequestDispatcher(url);
             //rd.forward(request, response);
             //chặn response lại ko hiện welcome lên kịp lúc show trang 
@@ -87,7 +92,11 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -101,7 +110,11 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

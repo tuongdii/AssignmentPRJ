@@ -35,7 +35,7 @@ public class LoadProductServlet extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet LoadProductServlet</title>");            
+            out.println("<title>Servlet LoadProductServlet</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet LoadProductServlet at " + request.getContextPath() + "</h1>");

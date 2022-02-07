@@ -6,6 +6,7 @@
 package duyvtt.product;
 
 import duyvtt.utils.DBHelpers;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,7 +20,7 @@ import javax.naming.NamingException;
  *
  * @author DELL
  */
-public class ProductDAO {
+public class ProductDAO implements Serializable{
 
     public List<ProductDTO> getProductList()
             throws SQLException, NamingException {

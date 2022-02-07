@@ -5,13 +5,14 @@
  */
 package duyvtt.product;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
  *
  * @author DELL
  */
-public class ProductDTO {
+public class ProductDTO implements Serializable{
     private String id;
     private String name;
     private BigDecimal price;

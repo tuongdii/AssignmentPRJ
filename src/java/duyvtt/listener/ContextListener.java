@@ -18,27 +18,30 @@ import org.apache.log4j.PropertyConfigurator;
  * @author DELL
  */
 public class ContextListener implements ServletContextListener {
-    
-    private void configLog4j(ServletContext context){
+
+    private void configLog4j(ServletContext context) {
         String log4jConfigFile = context.getInitParameter("LOG4J_PROPERTIES_FILE_LOCATION");
-        String fullPath = 
-                context.getRealPath("/") + log4jConfigFile;
-        
+        String fullPath
+                = context.getRealPath("/") + log4jConfigFile;
+
         System.setProperty("PATH", context.getRealPath("/"));
         PropertyConfigurator.configure(fullPath);
     }
-    private void loadSiteMapsFile(ServletContext context){
+
+    private void loadSiteMapsFile(ServletContext context) {
         String siteMapLocation = context.getInitParameter("SITEMAPS_PROPERTIES_FILE_LOCATION");
-        Properties siteMapProperty = 
-                PropertiesFileHelper.getProperties(context, siteMapLocation);
+        Properties siteMapProperty
+                = PropertiesFileHelper.getProperties(context, siteMapLocation);
         context.setAttribute("SITE_MAP", siteMapProperty);
     }
-    private void loadAuthenticationFile(ServletContext context){
+
+    private void loadAuthenticationFile(ServletContext context) {
         String authenticationLocation = context.getInitParameter("AUTHENTICATION_PROPERTIES_FILE_LOCATION");
-        Properties authenticationProperty = 
-                PropertiesFileHelper.getProperties(context, authenticationLocation);
+        Properties authenticationProperty
+                = PropertiesFileHelper.getProperties(context, authenticationLocation);
         context.setAttribute("AUTHENTICATION_LIST", authenticationProperty);
     }
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext context = sce.getServletContext();
@@ -49,6 +52,6 @@ public class ContextListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        
+
     }
 }

@@ -79,12 +79,12 @@ public class DispatcherFilter implements Filter {
             
             String resource = httpRequest.getServletPath().substring(1);
             url = siteMapProp.getProperty(resource);
-            System.out.println(url);
+            
             if(url != null){
                 RequestDispatcher rd = httpRequest.getRequestDispatcher(url);
                 rd.forward(request, response);
             } else{
-                chain.doFilter(request, response);
+                httpResponse.sendError(404);
             }
         }catch(Throwable t){
             log(t.getMessage());

@@ -30,13 +30,6 @@ public class DBHelpers implements Serializable{
         //get connection
         Connection con = ds.getConnection();
         return con;     
-//        //1.Load Driver
-//        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-//        //2.Create Connection String
-//        String url = "jdbc:sqlserver://localhost:1433;databaseName=LOGIN";
-//        //3. Open Connection
-//        Connection con = DriverManager.getConnection(url, "sa", "20122001");
-//        return con;
           
     }   
     

@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class UpdateServlet extends HttpServlet {
     private final String ERROR_PAGE = "errors.html";
-    private final String SEARCH_PAGE = "searchPageAdmin";
+    private final String SEARCH_LAST_NAME_SERVLET = "searchAccountAction";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -52,16 +52,16 @@ public class UpdateServlet extends HttpServlet {
             boolean result = dao.updateAccount(username, password, isAdmin);
             if(result){
                 //.call previous function again
-                url = SEARCH_PAGE;
                 ServletContext context = request.getServletContext();
                 Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");
-                url = siteMapProp.getProperty(url);
+                url = siteMapProp.getProperty(SEARCH_LAST_NAME_SERVLET);
             }
         }catch(SQLException e){
             e.printStackTrace();
         }catch(NamingException e){
             e.printStackTrace();
         }finally{
+            url = url + "?txtSearchValue=" + searchValue;
             RequestDispatcher rd = request.getRequestDispatcher(url);
             rd.forward(request, response);
         }

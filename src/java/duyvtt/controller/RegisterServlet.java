@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author DELL
  */
-
 public class RegisterServlet extends HttpServlet {
 
     private final String LOGIN_PAGE = "login";
@@ -84,7 +83,7 @@ public class RegisterServlet extends HttpServlet {
         } catch (SQLException ex) {
             String msg = ex.getMessage();
             log("RegisterServlet _ SQL " + msg);
-            if(msg.contains("duplicate")){
+            if (msg.contains("duplicate")) {
                 errors.setUsernameIsExisted(username + " existed!!!");
                 request.setAttribute("INSERT_ERRORS", errors);
             }

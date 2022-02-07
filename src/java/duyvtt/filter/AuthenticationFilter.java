@@ -72,7 +72,7 @@ public class AuthenticationFilter implements Filter {
         String resource = httpRequest.getServletPath().substring(1);
         //check resource authentication
         String rule = (String) authProperties.getProperty(resource);
-        System.out.println(resource);
+        
         if (rule != null && rule.equals("restricted")) {
             if (session == null || session.getAttribute("USER") == null) {
                 httpResponse.sendRedirect("login");

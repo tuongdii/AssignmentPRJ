@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
  * @author DELL
  */
 public class PropertiesFileHelper {
-    private final static Logger LOGGER = Logger.getLogger(PropertiesFileHelper.class);
+    private final static Logger LOGGER4J = Logger.getLogger(PropertiesFileHelper.class);
     public static Properties getProperties(ServletContext context, String fileRelativePath){
         InputStream input = context.getResourceAsStream(fileRelativePath);
         Properties prop = null;
@@ -24,8 +24,8 @@ public class PropertiesFileHelper {
             prop = new Properties();
             prop.load(input);
         }catch(IOException ex){
-            System.out.println("Hello");
-            LOGGER.error(ex);
+
+            LOGGER4J.error(ex);
         }
         return prop;
     }

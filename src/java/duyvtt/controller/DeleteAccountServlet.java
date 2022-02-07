@@ -22,10 +22,11 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author DELL
  */
-
 public class DeleteAccountServlet extends HttpServlet {
+
     private final String ERROR_PAGE = "errors.html";
-    private final String SEARCH_PAGE = "searchPageAdmin";
+    private final String SEARCH_LATS_NAME_SERVLET = "searchAccountAction";
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -41,31 +42,28 @@ public class DeleteAccountServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         String username = request.getParameter("username");
         String searchValue = request.getParameter("lastSearchValue");
-        System.out.println("User " + username);
-        System.out.println("value " + searchValue);
         String url = ERROR_PAGE;
-        try  {
+        try {
             //call DAO
             RegistrationDAO dao = new RegistrationDAO();
             boolean result = dao.deleteAccount(username);
-            if(result){
+            if (result) {
                 //.call previous function again
-                url = SEARCH_PAGE;
                 ServletContext context = request.getServletContext();
                 Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");
-                url = siteMapProp.getProperty(url);
+                url = siteMapProp.getProperty(SEARCH_LATS_NAME_SERVLET);
             }//end if delete successfully
-        }catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
-        }catch(NamingException e){
+        } catch (NamingException e) {
             e.printStackTrace();
-        }finally{
+        } finally {
             url = url + "?txtSearchValue=" + searchValue;
             RequestDispatcher rd = request.getRequestDispatcher(url);
             rd.forward(request, response);
             out.close();
         }
-        
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
