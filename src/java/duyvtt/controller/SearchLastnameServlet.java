@@ -11,10 +11,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Properties;
 import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,10 +24,11 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author DELL
  */
-@WebServlet(name = "SearchLastnameServlet", urlPatterns = {"/SearchLastnameServlet"})
 public class SearchLastnameServlet extends HttpServlet {
-    private final String SEARCH_PAGE = "search.html";
-    private final String SEARCH_RESULT_PAGE = "search.jsp";
+
+    private final String SEARCH_PAGE = "search";
+    private final String SEARCH_RESULT_PAGE = "searchPageAdmin";
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -37,14 +39,14 @@ public class SearchLastnameServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException{
+            throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-        
+
         String searchValue = request.getParameter("txtSearchValue");
         String url = SEARCH_PAGE;
-        try  {
-            if(!searchValue.trim().isEmpty()){
+        try {
+            if (!searchValue.trim().isEmpty()) {
                 //callDAO
                 RegistrationDAO dao = new RegistrationDAO();
                 dao.searchLastname(searchValue);
@@ -52,11 +54,14 @@ public class SearchLastnameServlet extends HttpServlet {
                 url = SEARCH_RESULT_PAGE;
                 request.setAttribute("SEARCH_RESULT", result);
             }
-        }catch(NamingException ex){
+        } catch (NamingException ex) {
             ex.printStackTrace();
-        }catch(SQLException ex){
+        } catch (SQLException ex) {
             ex.printStackTrace();
-        }finally{
+        } finally {
+            ServletContext context = request.getServletContext();
+            Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");
+            url = siteMapProp.getProperty(url);
             RequestDispatcher rd = request.getRequestDispatcher(url);
             rd.forward(request, response);
             out.close();

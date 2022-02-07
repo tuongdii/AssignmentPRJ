@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 import java.sql.SQLException;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,8 +24,8 @@ import javax.servlet.http.HttpSession;
  */
 public class LoginServlet extends HttpServlet {
 
-    private final String SEARCH_PAGE = "search.html";
-    private final String INVALID_PAGE = "invalid.html";
+    private final String SEARCH_PAGE = "search";
+    private final String INVALID_PAGE = "invalid";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -50,18 +51,23 @@ public class LoginServlet extends HttpServlet {
             RegistrationDTO result = dao.checkLogin(username, password);
             if (result != null) {
                 url = SEARCH_PAGE;
+                
+                // Create session and add RegistrationDTO attribute
                 HttpSession session = request.getSession();
-                session.setAttribute("USERNAME", username);
-                session.setAttribute("LASTNAME", result.getLastname());
+                session.setAttribute("USER", result);
+                
+                //create account cookie for remind user
+                Cookie cookie = new Cookie(username, password);
+                cookie.setMaxAge(-1);   //means cookie existing until close browser
+                response.addCookie(cookie);
                 
             }
-            response.sendRedirect(url);
         } catch (SQLException ex) {
             ex.printStackTrace();
         } catch (NamingException ex) {
             ex.printStackTrace();
         } finally {
-             
+             response.sendRedirect(url);
             //RequestDispatcher rd = request.getRequestDispatcher(url);
             //rd.forward(request, response);
             //chặn response lại ko hiện welcome lên kịp lúc show trang 

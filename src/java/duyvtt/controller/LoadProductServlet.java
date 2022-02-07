@@ -5,13 +5,9 @@
  */
 package duyvtt.controller;
 
-import duyvtt.registration.RegistrationDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
-import javax.naming.NamingException;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,9 +16,8 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author DELL
  */
-@WebServlet(name = "DeteleAccountServlet", urlPatterns = {"/DeteleAccountServlet"})
-public class DeteleAccountServlet extends HttpServlet {
-    private final String ERROR_PAGE = "errors.html";
+public class LoadProductServlet extends HttpServlet {
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -35,29 +30,18 @@ public class DeteleAccountServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
-        String username = request.getParameter("username");
-        String searchValue = request.getParameter("lastSearchValue");
-        String url = ERROR_PAGE;
-        try  {
-            //call DAO
-            RegistrationDAO dao = new RegistrationDAO();
-            boolean result = dao.deleteAccount(username);
-            if(result){
-                //.call previous function again
-                url = "DispatchController"
-                        +"?btAction=Search"
-                        +"&txtSearchValue=" + searchValue;
-            }//end if delete successfully
-        }catch(SQLException e){
-            e.printStackTrace();
-        }catch(NamingException e){
-            e.printStackTrace();
-        }finally{
-            response.sendRedirect(url);
-            out.close();
+        try (PrintWriter out = response.getWriter()) {
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet LoadProductServlet</title>");            
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet LoadProductServlet at " + request.getContextPath() + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
         }
-        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

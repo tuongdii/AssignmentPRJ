@@ -10,23 +10,21 @@ import duyvtt.registration.RegistrationDTO;
 import java.io.IOException;
 import java.sql.SQLException;
 import javax.naming.NamingException;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
  * @author DELL
  */
-@WebServlet(name = "ProcessRequestServlet", urlPatterns = {"/ProcessRequestServlet"})
-public class ProcessRequestServlet extends HttpServlet {
+public class AutoLoginServlet extends HttpServlet {
 
-    private final String LOGIN_PAGE = "login.html";
-    private final String SEARCH_PAGE = "search.jsp";
+    private final String LOGIN_PAGE = "login";
+    private final String SEARCH_PAGE = "search";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -54,6 +52,8 @@ public class ProcessRequestServlet extends HttpServlet {
                     RegistrationDAO dao = new RegistrationDAO();
                     RegistrationDTO result = dao.checkLogin(username, password);
                     if (result != null) {
+                        HttpSession session = request.getSession();
+                        session.setAttribute("USER", result);
                         url = SEARCH_PAGE;
                         break;
                     }//end authentication is successfully checked
@@ -64,8 +64,7 @@ public class ProcessRequestServlet extends HttpServlet {
         } catch (NamingException ex) {
             ex.printStackTrace();
         } finally {
-            RequestDispatcher rd = request.getRequestDispatcher(url);
-            rd.forward(request, response);
+            response.sendRedirect(url);
         }
     }
 

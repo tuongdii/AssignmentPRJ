@@ -5,11 +5,9 @@
  */
 package duyvtt.controller;
 
-import cart.CartObject;
+import duyvtt.cart.CartObject;
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,9 +17,8 @@ import javax.servlet.http.HttpSession;
  *
  * @author DELL
  */
-@WebServlet(name = "AddItemToCartServlet", urlPatterns = {"/AddItemToCartServlet"})
 public class AddItemToCartServlet extends HttpServlet {
-    private final String SHOPPING_PAGE = "onlineShopping.html";
+    private final String SHOPPING_PAGE = "shopPage";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>

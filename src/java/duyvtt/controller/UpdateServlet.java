@@ -9,9 +9,11 @@ import duyvtt.registration.RegistrationDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.Properties;
 import javax.naming.NamingException;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,9 +22,9 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author DELL
  */
-@WebServlet(name = "UpdateServlet", urlPatterns = {"/UpdateServlet"})
 public class UpdateServlet extends HttpServlet {
     private final String ERROR_PAGE = "errors.html";
+    private final String SEARCH_PAGE = "searchPageAdmin";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -50,17 +52,18 @@ public class UpdateServlet extends HttpServlet {
             boolean result = dao.updateAccount(username, password, isAdmin);
             if(result){
                 //.call previous function again
-                url = "DispatchController"
-                        +"?btAction=Search"
-                        +"&txtSearchValue=" + searchValue;
+                url = SEARCH_PAGE;
+                ServletContext context = request.getServletContext();
+                Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");
+                url = siteMapProp.getProperty(url);
             }
         }catch(SQLException e){
             e.printStackTrace();
         }catch(NamingException e){
             e.printStackTrace();
         }finally{
-            response.sendRedirect(url);
-            out.close();
+            RequestDispatcher rd = request.getRequestDispatcher(url);
+            rd.forward(request, response);
         }
     }
 

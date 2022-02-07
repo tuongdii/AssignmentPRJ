@@ -16,7 +16,7 @@
     </head>
     <body>
         <font color="red">
-        Welcome, ${sessionScope.LASTNAME}
+        Welcome, ${sessionScope.USER.lastname}
         <%-- <% 
                 Cookie[] cookies = request.getCookies();
                 if(cookies != null){
@@ -34,7 +34,7 @@
             %> --%>
         </font>
         <h1>Search Page</h1>
-        <form action="DispatchController">
+        <form action="searchAccountAction">
             Search Value <input type="text" name="txtSearchValue" 
                                 value="${param.txtSearchValue}" />
             <input type="submit" value="Search" name="btAction" />
@@ -58,7 +58,7 @@
                     </thead>
                     <tbody>
                         <c:forEach var="dto" items="${result}" varStatus="counter">
-                        <form action="DispatchController">
+                        <form action="searchAccountAction">
                             <tr>
                                 <td>
                                     ${counter.count}
@@ -82,7 +82,7 @@
                                     />
                                 </td>
                                 <td>
-                                    <c:url var="deleteUrl" value="DispatchController">
+                                    <c:url var="deleteUrl" value="deleteAccountAction">
                                         <c:param name="btAction" value="Delete"/>
                                         <c:param name="username" value="${dto.username}"/>
                                         <c:param name="lastSearchValue" value="${searchValue}"/>

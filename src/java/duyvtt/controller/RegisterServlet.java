@@ -10,10 +10,11 @@ import duyvtt.registration.RegistrationDTO;
 import duyvtt.registration.RegistrationInsertError;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Properties;
 import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,11 +23,11 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author DELL
  */
-@WebServlet(name = "RegisterServlet", urlPatterns = {"/RegisterServlet"})
+
 public class RegisterServlet extends HttpServlet {
 
-    private final String LOGIN_PAGE = "login.html";
-    private final String ERROR_PAGE = "register.jsp";
+    private final String LOGIN_PAGE = "login";
+    private final String ERROR_PAGE = "registerPage";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -90,6 +91,9 @@ public class RegisterServlet extends HttpServlet {
         } catch (NamingException ex) {
             log("RegisterServlet _ Maming " + ex.getMessage());
         } finally {
+            ServletContext context = request.getServletContext();
+            Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");
+            url = siteMapProp.getProperty(url);
             RequestDispatcher rq = request.getRequestDispatcher(url);
             rq.forward(request, response);
         }
