@@ -19,6 +19,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -27,7 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 public class SearchLastnameServlet extends HttpServlet {
 
     private final String SEARCH_PAGE = "search";
-    private final String SEARCH_RESULT_PAGE = "searchPageAdmin";
+    private final String SEARCH_PAGE_ADMIN = "searchPageAdmin";
+    private final String SEARCH_PAGE_USER = "searchPageUser";
+    
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -41,7 +44,6 @@ public class SearchLastnameServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
 
         String searchValue = request.getParameter("txtSearchValue");
         String url = SEARCH_PAGE;
@@ -51,8 +53,15 @@ public class SearchLastnameServlet extends HttpServlet {
                 RegistrationDAO dao = new RegistrationDAO();
                 dao.searchLastname(searchValue);
                 List<RegistrationDTO> result = dao.getAccounts();
-                url = SEARCH_RESULT_PAGE;
                 request.setAttribute("SEARCH_RESULT", result);
+                HttpSession session = request.getSession(false);
+                boolean role = ((RegistrationDTO) session.getAttribute("USER")).isRole();
+                if(role == true){
+                    url = SEARCH_PAGE_ADMIN;
+                }
+                if(role == false){
+                    url = SEARCH_PAGE_USER;
+                }
             }
         } catch (NamingException ex) {
             ex.printStackTrace();
@@ -64,7 +73,6 @@ public class SearchLastnameServlet extends HttpServlet {
             url = siteMapProp.getProperty(url);
             RequestDispatcher rd = request.getRequestDispatcher(url);
             rd.forward(request, response);
-            out.close();
         }
     }
 

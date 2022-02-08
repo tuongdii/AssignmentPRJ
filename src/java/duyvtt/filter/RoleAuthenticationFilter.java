@@ -5,6 +5,7 @@
  */
 package duyvtt.filter;
 
+import duyvtt.registration.RegistrationDTO;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -13,6 +14,7 @@ import java.util.Properties;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -25,19 +27,22 @@ import javax.servlet.http.HttpSession;
  *
  * @author DELL
  */
-public class AuthenticationFilter implements Filter {
+public class RoleAuthenticationFilter implements Filter {
 
     private static final boolean debug = true;
 
+    // The filter configuration object we are associated with.  If
+    // this value is null, this filter instance is not currently
+    // configured. 
     private FilterConfig filterConfig = null;
 
-    public AuthenticationFilter() {
+    public RoleAuthenticationFilter() {
     }
 
     private void doBeforeProcessing(ServletRequest request, ServletResponse response)
             throws IOException, ServletException {
         if (debug) {
-            log("AuthenticationFilter:DoBeforeProcessing");
+            log("RoleAuthenticationFilter:DoBeforeProcessing");
         }
 
     }
@@ -45,8 +50,9 @@ public class AuthenticationFilter implements Filter {
     private void doAfterProcessing(ServletRequest request, ServletResponse response)
             throws IOException, ServletException {
         if (debug) {
-            log("AuthenticationFilter:DoAfterProcessing");
+            log("RoleAuthenticationFilter:DoAfterProcessing");
         }
+
     }
 
     /**
@@ -63,21 +69,38 @@ public class AuthenticationFilter implements Filter {
             throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-        //get authentication properties
-        ServletContext context = httpRequest.getServletContext();
-        Properties authProperties = (Properties) context.getAttribute("AUTHENTICATION_LIST");
 
+        ServletContext context = httpRequest.getServletContext();
         HttpSession session = httpRequest.getSession(false);
-        //get resource name 
-        String resource = httpRequest.getServletPath().substring(1);
-        //check resource authentication
-        String rule = (String) authProperties.getProperty(resource);
-        System.out.println("resource" + resource);
-        if (rule != null && rule.equals("restricted")) {
-            if (session == null || session.getAttribute("USER") == null) {
-                httpResponse.sendRedirect("login");
-            } else {
+        //get resource name
+        String resouce = httpRequest.getServletPath().substring(1);
+
+        //get admin authentication properties
+        Properties adminAuthProperties
+                = (Properties) context.getAttribute("ADMIN_AUTHENTICATION_LIST");
+
+        //get user authentication properties
+        Properties userAuthProperties
+                = (Properties) context.getAttribute("USER_AUTHENTICATION_LIST");
+        
+        //check resource role authentication
+        String url = null;
+        if (session != null) {
+            RegistrationDTO user = (RegistrationDTO) session.getAttribute("USER");
+            boolean role = user.isRole();
+            System.out.println(role);
+            if (role == true) {
+               url = adminAuthProperties.getProperty(resouce);
+            }
+            if(role == false){
+                url = userAuthProperties.getProperty(resouce);
+            }
+            System.out.println("check role" +resouce);
+            System.out.println(url);
+            if(url != null && url.equals("allowed")){
                 chain.doFilter(request, response);
+            }else{
+                httpResponse.sendError(403);
             }
         } else {
             chain.doFilter(request, response);
@@ -114,7 +137,7 @@ public class AuthenticationFilter implements Filter {
         this.filterConfig = filterConfig;
         if (filterConfig != null) {
             if (debug) {
-                log("AuthenticationFilter:Initializing filter");
+                log("RoleAuthenticationFilter:Initializing filter");
             }
         }
     }
@@ -125,9 +148,9 @@ public class AuthenticationFilter implements Filter {
     @Override
     public String toString() {
         if (filterConfig == null) {
-            return ("AuthenticationFilter()");
+            return ("RoleAuthenticationFilter()");
         }
-        StringBuffer sb = new StringBuffer("AuthenticationFilter(");
+        StringBuffer sb = new StringBuffer("RoleAuthenticationFilter(");
         sb.append(filterConfig);
         sb.append(")");
         return (sb.toString());
