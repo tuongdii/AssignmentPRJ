@@ -5,15 +5,19 @@
  */
 package duyvtt.controller;
 
+import duyvtt.registration.RegistrationChangePasswordError;
 import duyvtt.registration.RegistrationDAO;
 import duyvtt.registration.RegistrationDTO;
-import duyvtt.registration.RegistrationInsertError;
+import duyvtt.utils.Helper;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.logging.Level;
 import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
+import org.apache.log4j.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -23,10 +27,11 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author DELL
  */
-public class RegisterServlet extends HttpServlet {
+public class ChangePasswordServlet extends HttpServlet {
 
-    private final String LOGIN_PAGE = "login";
-    private final String ERROR_PAGE = "registerPage";
+    private final Logger LOGGER = Logger.getLogger(ChangePasswordServlet.class);
+
+    private static String CHANGE_PASSWORD_PAGE = "changePassword";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -40,55 +45,50 @@ public class RegisterServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        request.setCharacterEncoding("utf-8");
+        request.setCharacterEncoding("UTF-8");
         String username = request.getParameter("txtUsername");
-        String password = request.getParameter("txtPassword");
-        String confirm = request.getParameter("txtConfirm");
-        String fullname = request.getParameter("txtFullname");
+        String currentPassword = request.getParameter("txtCurrent");
+        String newPassword = request.getParameter("txtNew");
+        String confirmPassword = request.getParameter("txtConfirm");
 
-
-        RegistrationInsertError errors = new RegistrationInsertError();
-        boolean foundErr = false;
-        String url = ERROR_PAGE;
-
+        RegistrationChangePasswordError error = new RegistrationChangePasswordError();
+        boolean foundError = false;
+        String url = CHANGE_PASSWORD_PAGE;
         try {
-            //1. Check all user errors
-            if (username.trim().length() < 6 || username.trim().length() > 20) {
-                foundErr = true;
-                errors.setUsernameLengthErr("Username is required form 6 to 20 chars");
-            }
-            if (password.trim().length() < 6 || password.trim().length() > 30) {
-                foundErr = true;
-                errors.setPasswordLengthErr("Password is required form 6 to 30 chars");
-            } else if (!confirm.trim().equals(password.trim())) {
-                foundErr = true;
-                errors.setConfirmNotMatch("Confirm must match password");
-            }
-            if (fullname.trim().length() < 2 || fullname.trim().length() > 50) {
-                foundErr = true;
-                errors.setFullNameLengthErr("Full name is required form 2 to 50 chars");
-            }
+            request.setAttribute("USERNAME", username);
+            String hashedCurrentPassword = Helper.hashString(currentPassword);
+            String hashedNewPassword = Helper.hashString(newPassword);
+            String hashedConfirmPassword = Helper.hashString(confirmPassword);
 
-            if (foundErr) {
-                request.setAttribute("INSERT_ERRORS", errors);
-            } else {
-                //Insert to DB
-                RegistrationDTO dto = new RegistrationDTO(username, password, fullname, false);
-                RegistrationDAO dao = new RegistrationDAO();
-                boolean result = dao.insertAccount(dto);
-                if (result) {
-                    url = LOGIN_PAGE;
+            RegistrationDAO dao = new RegistrationDAO();
+            System.out.println(username);
+            RegistrationDTO dto = dao.checkLogin(username, hashedCurrentPassword);
+            if(dto == null){
+                foundError = true;
+                error.setWrongPassword("Enter the wrong password");
+            }
+            if(!hashedNewPassword.equalsIgnoreCase(hashedConfirmPassword)){
+                foundError = true;
+                error.setConfirmNotMatch("Confirm must match password");
+            }
+            if(newPassword.trim().length()<6 || newPassword.trim().length()>30){
+                foundError = true;
+                error.setPasswordLengthErr("Password is required form 6 to 30 chars");
+            }
+            if(foundError){
+                request.setAttribute("CHANGEPASSWORD_ERROR", error);
+            }else{
+                boolean result = dao.changePassword(username, hashedNewPassword);
+                if(result){
+                    request.setAttribute("CHANGEPASSWORD_SUCCESS", "Change password successfully.");
                 }
             }
+        } catch (NoSuchAlgorithmException ex) {
+            LOGGER.error(ex);
         } catch (SQLException ex) {
-            String msg = ex.getMessage();
-            log("RegisterServlet _ SQL " + msg);
-            if (msg.contains("duplicate")) {
-                errors.setUsernameIsExisted(username + " existed!!!");
-                request.setAttribute("INSERT_ERRORS", errors);
-            }
+            LOGGER.error(ex);
         } catch (NamingException ex) {
-            log("RegisterServlet _ Maming " + ex.getMessage());
+            LOGGER.error(ex);
         } finally {
             ServletContext context = request.getServletContext();
             Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");

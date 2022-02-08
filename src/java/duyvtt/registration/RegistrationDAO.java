@@ -22,11 +22,11 @@ import javax.naming.NamingException;
 public class RegistrationDAO implements Serializable {
 
     public RegistrationDTO checkLogin(String username, String password)
-            throws SQLException,  NamingException {
+            throws SQLException, NamingException {
         Connection con = null;
         PreparedStatement stm = null;
         ResultSet rs = null;
-        
+
         try {
             //1. Connect DB
             con = DBHelpers.makeConnection();
@@ -70,7 +70,7 @@ public class RegistrationDAO implements Serializable {
     }
 
     public void searchLastname(String searchValue)
-        throws SQLException, NamingException  {
+            throws SQLException, NamingException {
         Connection con = null;
         PreparedStatement stm = null;
         ResultSet rs = null;
@@ -83,12 +83,12 @@ public class RegistrationDAO implements Serializable {
                 String sql = "Select username, password, lastname, isAdmin "
                         + "From Registration "
                         + "Where lastname Like ?";
-                
+
                 stm = con.prepareStatement(sql);
                 stm.setString(1, "%" + searchValue + "%");
                 rs = stm.executeQuery();
                 //5. Process
-                while(rs.next()){
+                while (rs.next()) {
                     //get field/collum
                     String username = rs.getString("username");
                     String password = rs.getString("password");
@@ -97,7 +97,7 @@ public class RegistrationDAO implements Serializable {
                     //create DTO
                     RegistrationDTO dto = new RegistrationDTO(username, password, lastname, role);
                     //add to accounts list
-                    if(this.accounts == null){
+                    if (this.accounts == null) {
                         this.accounts = new ArrayList<>();
                     }
                     this.accounts.add(dto);
@@ -116,11 +116,12 @@ public class RegistrationDAO implements Serializable {
             }
         }
     }
+
     public boolean deleteAccount(String username)
-         throws SQLException, NamingException {
+            throws SQLException, NamingException {
         Connection con = null;
         PreparedStatement stm = null;
-       
+
         try {
             //1. Connect DB
             con = DBHelpers.makeConnection();
@@ -134,7 +135,7 @@ public class RegistrationDAO implements Serializable {
                 //4. Execute Query              
                 int row = stm.executeUpdate();
                 //5. Process
-                if (row > 0){
+                if (row > 0) {
                     return true;
                 }
             }
@@ -145,16 +146,17 @@ public class RegistrationDAO implements Serializable {
             }
             if (con != null) {
                 con.close();
-                
+
             }
         }
         return false;
     }
-    public boolean updateAccount(String username, String password, boolean isAdmin)
-         throws SQLException, NamingException {
+
+    public boolean updateAccount(String username, String lastname, boolean isAdmin)
+            throws SQLException, NamingException {
         Connection con = null;
         PreparedStatement stm = null;
-       
+
         try {
             //1. Connect DB
             con = DBHelpers.makeConnection();
@@ -162,16 +164,16 @@ public class RegistrationDAO implements Serializable {
             if (con != null) {
                 //3. Create Statement to set SQL
                 String sql = "Update Registration "
-                        +"Set password = ?, isAdmin = ? "
+                        + "Set lastname = ?, isAdmin = ? "
                         + "Where username = ?";
                 stm = con.prepareStatement(sql);
-                stm.setString(1, password);
+                stm.setNString(1, lastname);
                 stm.setBoolean(2, isAdmin);
                 stm.setString(3, username);
                 //4. Execute Query              
                 int row = stm.executeUpdate();
                 //5. Process
-                if (row > 0){
+                if (row > 0) {
                     return true;
                 }
             }
@@ -182,17 +184,17 @@ public class RegistrationDAO implements Serializable {
             }
             if (con != null) {
                 con.close();
-                
+
             }
         }
         return false;
     }
-    
+
     public boolean insertAccount(RegistrationDTO dto)
-         throws SQLException, NamingException {
+            throws SQLException, NamingException {
         Connection con = null;
         PreparedStatement stm = null;
-        if(dto == null){
+        if (dto == null) {
             return false;
         }//end dto is not existed
         try {
@@ -211,7 +213,7 @@ public class RegistrationDAO implements Serializable {
                 //4. Execute Query              
                 int row = stm.executeUpdate();
                 //5. Process
-                if (row > 0){
+                if (row > 0) {
                     return true;
                 }
             }
@@ -222,9 +224,39 @@ public class RegistrationDAO implements Serializable {
             }
             if (con != null) {
                 con.close();
-                
+
             }
         }
         return false;
+    }
+
+    public boolean changePassword(String username, String newPassword)
+            throws SQLException, NamingException {
+        Connection con = null;
+        PreparedStatement stm = null;
+        try {
+            con = DBHelpers.makeConnection();
+            if (con != null) {
+                String sql = "UPDATE Registration "
+                        + "SET password = ? "
+                        + "WHERE username = ?";
+                stm = con.prepareStatement(sql);
+                stm.setString(1, newPassword);
+                stm.setString(2, username);
+                int row = stm.executeUpdate();
+                if (row > 0) {
+                    return true;
+                }
+            }
+        } finally {
+            if (stm != null) {
+                stm.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+        return false;
+
     }
 }

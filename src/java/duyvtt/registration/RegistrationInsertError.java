@@ -5,11 +5,13 @@
  */
 package duyvtt.registration;
 
+import java.io.Serializable;
+
 /**
  *
  * @author DELL
  */
-public class RegistrationInsertError {
+public class RegistrationInsertError implements Serializable{
     private String usernameLengthErr;
     private String passwordLengthErr;
     private String confirmNotMatch;

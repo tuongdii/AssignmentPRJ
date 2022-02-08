@@ -37,9 +37,10 @@ public class UpdateServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
+        request.setCharacterEncoding("utf-8");
+        
         String username = request.getParameter("txtUsername");
-        String password = request.getParameter("txtPassword");
+        String lastname = request.getParameter("txtLastname");
         String checkAdmin = request.getParameter("chkAdmin");
         String searchValue = request.getParameter("lastSearchValue");
         boolean isAdmin = false;
@@ -49,7 +50,7 @@ public class UpdateServlet extends HttpServlet {
         String url = ERROR_PAGE;
         try{
             RegistrationDAO dao = new RegistrationDAO();
-            boolean result = dao.updateAccount(username, password, isAdmin);
+            boolean result = dao.updateAccount(username, lastname, isAdmin);
             if(result){
                 //.call previous function again
                 ServletContext context = request.getServletContext();

@@ -16,10 +16,12 @@
         <filter-name>DispatcherFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+    
     <listener>
         <description>ServletContextListener</description>
         <listener-class>duyvtt.listener.ContextListener</listener-class>
     </listener>
+    
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
         <servlet-class>duyvtt.controller.LoginServlet</servlet-class>
@@ -55,6 +57,10 @@
     <servlet>
         <servlet-name>RegisterServlet</servlet-name>
         <servlet-class>duyvtt.controller.RegisterServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ChangePasswordServlet</servlet-name>
+        <servlet-class>duyvtt.controller.ChangePasswordServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
@@ -112,6 +118,11 @@
         <param-name>USER_AUTHENTICATION_PROPERTIES_FILE_LOCATION</param-name>
         <param-value>WEB-INF\UserAuthentication.properties</param-value>
     </context-param>
+    <servlet-mapping>
+        <servlet-name>ChangePasswordServlet</servlet-name>
+        <url-pattern>/ChangePasswordServlet</url-pattern>
+    </servlet-mapping>
+    
     <session-config>
         <session-timeout>
             30
