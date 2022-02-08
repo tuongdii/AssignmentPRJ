@@ -88,15 +88,13 @@ public class RoleAuthenticationFilter implements Filter {
         if (session != null) {
             RegistrationDTO user = (RegistrationDTO) session.getAttribute("USER");
             boolean role = user.isRole();
-            System.out.println(role);
+            
             if (role == true) {
                url = adminAuthProperties.getProperty(resouce);
             }
             if(role == false){
                 url = userAuthProperties.getProperty(resouce);
             }
-            System.out.println("check role" +resouce);
-            System.out.println(url);
             if(url != null && url.equals("allowed")){
                 chain.doFilter(request, response);
             }else{
