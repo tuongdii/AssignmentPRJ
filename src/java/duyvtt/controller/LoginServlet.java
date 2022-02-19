@@ -7,13 +7,11 @@ package duyvtt.controller;
 
 import duyvtt.registration.RegistrationDAO;
 import duyvtt.registration.RegistrationDTO;
-import duyvtt.utils.Helper;
+import duyvtt.utils.SecurityHelper;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -21,14 +19,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author DELL
  */
 public class LoginServlet extends HttpServlet {
-
-    private final String SEARCH_PAGE = "search";
+    private final Logger LOGGER = Logger.getLogger(LoginServlet.class);
+    private final String SEARCH_PAGE_USER = "searchPageUser";
+    private final String SEARCH_PAGE_ADMIN = "searchPageAdmin";
     private final String INVALID_PAGE = "invalid";
 
     /**
@@ -41,7 +41,7 @@ public class LoginServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, NoSuchAlgorithmException {
+            throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
 
@@ -50,13 +50,11 @@ public class LoginServlet extends HttpServlet {
         String url = INVALID_PAGE;
 
         try {
-            String hashedPassword = Helper.hashString(password);
+            String hashedPassword = SecurityHelper.hashString(password);
             //call DAO -> new DAO object & call method of DAO
             RegistrationDAO dao = new RegistrationDAO();
             RegistrationDTO result = dao.checkLogin(username, hashedPassword);
             if (result != null) {
-                url = SEARCH_PAGE;
-
                 // Create session and add RegistrationDTO attribute
                 HttpSession session = request.getSession();
                 session.setAttribute("USER", result);
@@ -65,12 +63,19 @@ public class LoginServlet extends HttpServlet {
                 Cookie cookie = new Cookie(username, password);
                 cookie.setMaxAge(-1);   //means cookie existing until close browser
                 response.addCookie(cookie);
+                if(result.isRole() == true){
+                    url = SEARCH_PAGE_ADMIN;
+                }else{
+                    url = SEARCH_PAGE_USER;
+                }
 
             }
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            LOGGER.error(ex);
         } catch (NamingException ex) {
-            ex.printStackTrace();
+            LOGGER.error(ex);
+        } catch (NoSuchAlgorithmException ex) {
+            LOGGER.error(ex);
         } finally {
             response.sendRedirect(url);
             //RequestDispatcher rd = request.getRequestDispatcher(url);
@@ -92,11 +97,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
-            processRequest(request, response);
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            processRequest(request, response);      
     }
 
     /**
@@ -110,11 +111,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
             processRequest(request, response);
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     /**

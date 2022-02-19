@@ -63,6 +63,10 @@ public class AuthenticationFilter implements Filter {
             throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
+        
+        httpResponse.setContentType("text/html;charset=UTF-8");
+        httpResponse.setHeader("Cache-control", "no-cache, no-store");
+        
         //get authentication properties
         ServletContext context = httpRequest.getServletContext();
         Properties authProperties = (Properties) context.getAttribute("AUTHENTICATION_LIST");

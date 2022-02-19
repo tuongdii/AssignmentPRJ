@@ -13,7 +13,7 @@ import javax.xml.bind.DatatypeConverter;
  *
  * @author DELL
  */
-public class Helper {
+public class SecurityHelper {
 
     public static String hashString(String password) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("MD5");

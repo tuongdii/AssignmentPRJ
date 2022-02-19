@@ -8,7 +8,6 @@ package duyvtt.controller;
 import duyvtt.registration.RegistrationDAO;
 import duyvtt.registration.RegistrationDTO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
@@ -20,13 +19,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author DELL
  */
 public class SearchLastnameServlet extends HttpServlet {
-
+    private final Logger LOGGER = Logger.getLogger(SearchLastnameServlet.class);
     private final String SEARCH_PAGE = "search";
     private final String SEARCH_PAGE_ADMIN = "searchPageAdmin";
     private final String SEARCH_PAGE_USER = "searchPageUser";
@@ -64,9 +64,9 @@ public class SearchLastnameServlet extends HttpServlet {
                 }
             }
         } catch (NamingException ex) {
-            ex.printStackTrace();
+            LOGGER.error(ex);
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            LOGGER.error(ex);
         } finally {
             ServletContext context = request.getServletContext();
             Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");

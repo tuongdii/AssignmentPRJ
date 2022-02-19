@@ -21,12 +21,15 @@
         </c:if>
         </font>
         <h1>Search Page</h1>
+        <form action="logoutAction">
+            <input type="submit" value="Logout" name="btAction" />
+        </form>
         <form action="searchAccountAction">
             Search Value <input type="text" name="txtSearchValue" 
                                 value="${param.txtSearchValue}" />
             <input type="submit" value="Search" name="btAction" />
         </form></br>
-        
+
         <c:set var="searchValue" value="${param.txtSearchValue}"/>
         <c:if test="${not empty searchValue}">
             <c:set var="result" value="${requestScope.SEARCH_RESULT}"/>
@@ -42,7 +45,7 @@
                     </thead>
                     <tbody>
                         <c:forEach var="dto" items="${result}" varStatus="counter">
-                        
+
                             <tr>
                                 <td>
                                     ${counter.count}
@@ -50,22 +53,25 @@
                                 <td>
                                     ${dto.username}
                                 </td>
-                               
+
                                 <td>
                                     ${dto.lastname}                                  
                                 </td>
                                 <td>
-                                    <input type="checkbox" name="chkAdmin" value="ON" 
+                                   
                                            <c:if test="${dto.role == true}" >
-                                               checked="checked"
+                                               Admin
                                            </c:if>
-                                               disabled="disabled"/>
+                                           <c:if test="${dto.role == false}" >
+                                               User
+                                           </c:if>
+                                               
                                 </td>
-                                     
-                        </tr> 
-                      
+
+                            </tr> 
+
                         </c:forEach>
-                        
+
                     </tbody>
                 </table>
 
@@ -74,6 +80,6 @@
                 <h2>No record is matched!!</h2>
             </c:if>
         </c:if>
-      
+
     </body>
 </html>

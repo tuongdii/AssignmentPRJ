@@ -17,15 +17,14 @@
         <form action="changePasswordAction" method="POST">
             <c:set var="errors" value="${requestScope.CHANGEPASSWORD_ERROR}"/>
             <c:set var="info" value = "${requestScope.CHANGEPASSWORD_SUCCESS}"/>
-            Username: <input type="text" name="txtUsername"
-                             <c:if test="${empty param.username}">
-                                 value="${requestScope.USERNAME}"
-                             </c:if>
-                             <c:if test="${not empty param.username}">
-                                 value="${param.username}"
-                             </c:if>
-                             readonly="readonly"
-                             /><br>
+            Username: 
+            <c:if test="${empty param.username}">
+                ${requestScope.USERNAME}
+            </c:if>
+            <c:if test="${not empty param.username}">
+                ${param.username}
+            </c:if>
+
             Current password* <input type="password" name="txtCurrent" value="" /><br>
             <c:if test="${not empty errors.wrongPassword}">
                 <font color ="red">

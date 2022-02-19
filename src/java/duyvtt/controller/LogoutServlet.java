@@ -5,28 +5,20 @@
  */
 package duyvtt.controller;
 
-import duyvtt.registration.RegistrationDAO;
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Properties;
-import javax.naming.NamingException;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
+import javax.servlet.http.HttpSession;
 
 /**
  *
  * @author DELL
  */
-public class DeleteAccountServlet extends HttpServlet {
-
-    private final Logger LOGGER = Logger.getLogger(DeleteAccountServlet.class);
-    private final String SEARCH_LATS_NAME_SERVLET = "searchAccountAction";
-
+public class LogoutServlet extends HttpServlet {
+    private final String LOGIN_PAGE = "login";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -39,37 +31,22 @@ public class DeleteAccountServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String username = request.getParameter("username");
-        String searchValue = request.getParameter("lastSearchValue");
-        boolean foundError = false;
-        String url = SEARCH_LATS_NAME_SERVLET;
+        String url = LOGIN_PAGE;
         try {
-            //call DAO
-            RegistrationDAO dao = new RegistrationDAO();
-            boolean result = dao.deleteAccount(username);
-            if (result) {
-                //.call previous function again
-                ServletContext context = request.getServletContext();
-                Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");
-                url = siteMapProp.getProperty(SEARCH_LATS_NAME_SERVLET);
-            }//end if delete successfully
-        } catch (SQLException e) {
-            foundError = true;
-            LOGGER.error(e);
-        } catch (NamingException e) {
-            foundError = true;
-            LOGGER.error(e);
-        } finally {
-            if (!foundError) {
-                url = url + "?txtSearchValue=" + searchValue;
-                RequestDispatcher rd = request.getRequestDispatcher(url);
-                rd.forward(request, response);
-            } else {
-                response.sendError(500);
+            HttpSession session = request.getSession(false);
+            if (session == null){
+                return;
+            }else{
+                session.invalidate();
+                Cookie[] cookies = request.getCookies();
+                for (Cookie cookie : cookies) {
+                    cookie.setMaxAge(0);
+                    response.addCookie(cookie);
+                }
             }
-            
+        }finally{
+            response.sendRedirect(url);
         }
-        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

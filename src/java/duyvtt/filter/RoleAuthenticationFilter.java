@@ -14,7 +14,6 @@ import java.util.Properties;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -74,7 +73,6 @@ public class RoleAuthenticationFilter implements Filter {
         HttpSession session = httpRequest.getSession(false);
         //get resource name
         String resouce = httpRequest.getServletPath().substring(1);
-
         //get admin authentication properties
         Properties adminAuthProperties
                 = (Properties) context.getAttribute("ADMIN_AUTHENTICATION_LIST");
@@ -84,28 +82,33 @@ public class RoleAuthenticationFilter implements Filter {
                 = (Properties) context.getAttribute("USER_AUTHENTICATION_LIST");
         
         //check resource role authentication
-        String url = null;
-        if (session != null) {
-            RegistrationDTO user = (RegistrationDTO) session.getAttribute("USER");
-            boolean role = user.isRole();
+        if(adminAuthProperties.getProperty(resouce) != null){
+            if (session != null){
+                RegistrationDTO user = (RegistrationDTO) session.getAttribute("USER");
+                boolean role = user.isRole();
+                if (role == true){
+                    chain.doFilter(request, response);
+                }else {
+                    httpResponse.sendError(403);
+                }
+            }
+        }else if (userAuthProperties.getProperty(resouce) != null){
             
-            if (role == true) {
-               url = adminAuthProperties.getProperty(resouce);
+            if (session != null){
+                RegistrationDTO user = (RegistrationDTO) session.getAttribute("USER");
+                boolean role = user.isRole();
+                if (role == false){
+                    chain.doFilter(request, response);
+                }else {
+                    httpResponse.sendError(403);
+                }
             }
-            if(role == false){
-                url = userAuthProperties.getProperty(resouce);
-            }
-            if(url != null && url.equals("allowed")){
-                chain.doFilter(request, response);
-            }else{
-                httpResponse.sendError(403);
-            }
-        } else {
+        }else{
             chain.doFilter(request, response);
         }
 
     }
-
+  
     /**
      * Return the filter configuration object for this filter.
      */

@@ -7,8 +7,11 @@ package duyvtt.controller;
 
 import duyvtt.registration.RegistrationDAO;
 import duyvtt.registration.RegistrationDTO;
+import duyvtt.utils.SecurityHelper;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.util.logging.Level;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -16,6 +19,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -23,8 +27,10 @@ import javax.servlet.http.HttpSession;
  */
 public class AutoLoginServlet extends HttpServlet {
 
+    private final Logger LOGGER = Logger.getLogger(AutoLoginServlet.class);
     private final String LOGIN_PAGE = "login";
-    private final String SEARCH_PAGE = "search";
+    private final String SEARCH_PAGE_USER = "searchPageUser";
+    private final String SEARCH_PAGE_ADMIN = "searchPageAdmin";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -39,6 +45,7 @@ public class AutoLoginServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String url = LOGIN_PAGE;
+        boolean foundError = false;
         try {
             //1. Get Coolies form request
             Cookie[] cookies = request.getCookies();
@@ -48,23 +55,37 @@ public class AutoLoginServlet extends HttpServlet {
                     //3. Get username and password form name value
                     String username = cookie.getName();
                     String password = cookie.getValue();
+                    String hashedPassword = SecurityHelper.hashString(password);
                     //4. call DAO to check authentication
                     RegistrationDAO dao = new RegistrationDAO();
-                    RegistrationDTO result = dao.checkLogin(username, password);
+                    RegistrationDTO result = dao.checkLogin(username, hashedPassword);
                     if (result != null) {
                         HttpSession session = request.getSession();
                         session.setAttribute("USER", result);
-                        url = SEARCH_PAGE;
+                        if (result.isRole() == true) {
+                            url = SEARCH_PAGE_ADMIN;
+                        } else {
+                            url = SEARCH_PAGE_USER;
+                        }
                         break;
                     }//end authentication is successfully checked
                 }//end for traverse cookies
             }//end cookies is existes
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            LOGGER.error(ex);
+            foundError = true;
         } catch (NamingException ex) {
-            ex.printStackTrace();
+            LOGGER.error(ex);
+            foundError = true;
+        } catch (NoSuchAlgorithmException ex) {
+            LOGGER.error(ex);
+            foundError = true;
         } finally {
-            response.sendRedirect(url);
+            if (!foundError) {
+                response.sendRedirect(url);
+            } else {
+                response.sendError(500);
+            }
         }
     }
 

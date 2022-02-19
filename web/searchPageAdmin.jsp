@@ -21,6 +21,9 @@
         </c:if>
         </font>
         <h1>Search Page</h1>
+        <form action="logoutAction">
+            <input type="submit" value="Logout" name="btAction" />
+        </form>
         <form action="searchAccountAction">
             Search Value <input type="text" name="txtSearchValue" 
                                 value="${param.txtSearchValue}" />
@@ -73,7 +76,6 @@
                                 </td>
                                 <td>
                                     <c:url var="deleteUrl" value="deleteAccountAction">
-                                        <c:param name="btAction" value="Delete"/>
                                         <c:param name="username" value="${dto.username}"/>
                                         <c:param name="lastSearchValue" value="${searchValue}"/>
                                     </c:url>
@@ -94,6 +96,11 @@
             <c:if test="${empty result}">
                 <h2>No record is matched!!</h2>
             </c:if>
+            <c:if test="${not empty requestScope.UPDATE_ERRORS}">
+                <font color="red">
+                    ${requestScope.UPDATE_ERRORS.getFullNameLengthErr()}
+                </font>
+            </c:if>    
         </c:if>
       
     </body>

@@ -8,7 +8,7 @@ package duyvtt.controller;
 import duyvtt.registration.RegistrationChangePasswordError;
 import duyvtt.registration.RegistrationDAO;
 import duyvtt.registration.RegistrationDTO;
-import duyvtt.utils.Helper;
+import duyvtt.utils.SecurityHelper;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
@@ -56,9 +56,9 @@ public class ChangePasswordServlet extends HttpServlet {
         String url = CHANGE_PASSWORD_PAGE;
         try {
             request.setAttribute("USERNAME", username);
-            String hashedCurrentPassword = Helper.hashString(currentPassword);
-            String hashedNewPassword = Helper.hashString(newPassword);
-            String hashedConfirmPassword = Helper.hashString(confirmPassword);
+            String hashedCurrentPassword = SecurityHelper.hashString(currentPassword);
+            String hashedNewPassword = SecurityHelper.hashString(newPassword);
+            String hashedConfirmPassword = SecurityHelper.hashString(confirmPassword);
 
             RegistrationDAO dao = new RegistrationDAO();
             System.out.println(username);
@@ -85,10 +85,13 @@ public class ChangePasswordServlet extends HttpServlet {
             }
         } catch (NoSuchAlgorithmException ex) {
             LOGGER.error(ex);
+            response.sendError(500);
         } catch (SQLException ex) {
             LOGGER.error(ex);
+            response.sendError(500);
         } catch (NamingException ex) {
             LOGGER.error(ex);
+            response.sendError(500);
         } finally {
             ServletContext context = request.getServletContext();
             Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");

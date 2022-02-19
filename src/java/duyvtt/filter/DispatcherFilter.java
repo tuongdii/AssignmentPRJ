@@ -69,6 +69,7 @@ public class DispatcherFilter implements Filter {
         //set header for response object
         httpResponse.setContentType("text/html;charset=UTF-8");
         httpResponse.setHeader("Cache-control", "no-cache, no-store");
+        
         String url = null;
         
         
@@ -79,7 +80,6 @@ public class DispatcherFilter implements Filter {
             
             String resource = httpRequest.getServletPath().substring(1);
             url = siteMapProp.getProperty(resource);
-            
             if(url != null){
                 RequestDispatcher rd = httpRequest.getRequestDispatcher(url);
                 rd.forward(request, response);

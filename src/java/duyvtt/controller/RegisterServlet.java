@@ -18,13 +18,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author DELL
  */
 public class RegisterServlet extends HttpServlet {
-
+    private final Logger LOGGER = Logger.getLogger(RegisterServlet.class);
     private final String LOGIN_PAGE = "login";
     private final String ERROR_PAGE = "registerPage";
 
@@ -57,7 +58,7 @@ public class RegisterServlet extends HttpServlet {
                 foundErr = true;
                 errors.setUsernameLengthErr("Username is required form 6 to 20 chars");
             }
-            if (password.trim().length() < 6 || password.trim().length() > 30) {
+            if (password.length() < 6 || password.length() > 30) {
                 foundErr = true;
                 errors.setPasswordLengthErr("Password is required form 6 to 30 chars");
             } else if (!confirm.trim().equals(password.trim())) {
