@@ -69,10 +69,6 @@
         <servlet-class>duyvtt.controller.ChangePasswordServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DeleteAccountCofirmServlet</servlet-name>
-        <servlet-class>duyvtt.controller.DeleteAccountCofirmServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>LogoutServlet</servlet-name>
         <servlet-class>duyvtt.controller.LogoutServlet</servlet-class>
     </servlet>
@@ -135,10 +131,6 @@
     <servlet-mapping>
         <servlet-name>ChangePasswordServlet</servlet-name>
         <url-pattern>/ChangePasswordServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DeleteAccountCofirmServlet</servlet-name>
-        <url-pattern>/DeleteAccountCofirmServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>

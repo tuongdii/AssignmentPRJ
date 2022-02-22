@@ -40,7 +40,6 @@ public class DeleteAccountServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String username = request.getParameter("username");
-        String searchValue = request.getParameter("lastSearchValue");
         boolean foundError = false;
         String url = SEARCH_LATS_NAME_SERVLET;
         try {
@@ -61,7 +60,6 @@ public class DeleteAccountServlet extends HttpServlet {
             LOGGER.error(e);
         } finally {
             if (!foundError) {
-                url = url + "?txtSearchValue=" + searchValue;
                 RequestDispatcher rd = request.getRequestDispatcher(url);
                 rd.forward(request, response);
             } else {

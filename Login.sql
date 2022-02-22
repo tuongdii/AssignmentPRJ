@@ -9,13 +9,15 @@ CREATE TABLE Registration
 	lastname nvarchar(100),
 	isAdmin bit
 )
-CREATE TABLE Cart
-(
-	cartId char(3) primary key,
-	productName varchar(30),
-	price money,
-	quantity int,
+CREATE TABLE Product (
+    id             VARCHAR(30)     NOT NULL,
+    name            NVARCHAR(50)    NOT NULL,
+    price           MONEY           NOT NULL,
+    description     NVARCHAR(200)   NOT NULL,
+    quantity        INT             NOT NULL,
+    CONSTRAINT PK_Product PRIMARY KEY (id),
 )
+GO
 GO
 INSERT INTO Registration(username, password, lastname, isAdmin) VALUES ('tuongdii', '44c1bc87d6067efc72a3f7ba290cf297', N'Tường Duy', 1)
 GO
@@ -33,14 +35,14 @@ INSERT INTO Registration(username, password, lastname, isAdmin) VALUES ('minh257
 GO
 SELECT * FROM Registration
 
-INSERT INTO Cart(cartId, productName, price, quantity) VALUES ('C01', 'InnerB', 320000, 50)
+INSERT INTO Product (id, name, price, description, quantity)
+VALUES 
+('BOOK001', 'Java', 80, 'Java fundamentel book', 10),
+('BOOK002', 'OOP', 70, 'OOP fundamentel book', 10),
+('BOOK003', 'Servlet', 120, 'Servlet fundamentel book', 10),
+('BOOK004', 'JSP', 200, 'JSP fundamentel book', 10),
+('BOOK005', 'Netbeans', 50, 'Netbeans fundamentel book', 10),
+('BOOK006', 'JavaBeans', 125, 'JavaBeans fundamentel book', 10),
+('BOOK007', 'Tomcat', 150, 'Tomcat fundamentel book', 10),
+('BOOK008', 'JSTL', 75, 'JSTL fundamentel book', 10)
 GO
-INSERT INTO Cart(cartId, productName, price, quantity) VALUES ('C02', 'Obagi BHA', 680000, 10)
-GO
-INSERT INTO Cart(cartId, productName, price, quantity) VALUES ('C03', 'Derma forte', 120000, 50)
-GO
-INSERT INTO Cart(cartId, productName, price, quantity) VALUES ('C04', 'Niacinamide TO', 220000, 50)
-GO
-INSERT INTO Cart(cartId, productName, price, quantity) VALUES ('C05', 'VitaminC balance', 120000, 50)
-GO
-SELECT * FROM Cart

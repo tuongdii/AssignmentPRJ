@@ -78,9 +78,6 @@ public class LoginServlet extends HttpServlet {
             LOGGER.error(ex);
         } finally {
             response.sendRedirect(url);
-            //RequestDispatcher rd = request.getRequestDispatcher(url);
-            //rd.forward(request, response);
-            //chặn response lại ko hiện welcome lên kịp lúc show trang 
             out.close();
         }
     }

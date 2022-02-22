@@ -20,6 +20,6 @@ public class SecurityHelper {
         md.update(password.getBytes());
         byte[] digest = md.digest();
         String myHash = DatatypeConverter.printHexBinary(digest).toUpperCase();
-        return myHash;
+        return myHash.toLowerCase();
     }
 }

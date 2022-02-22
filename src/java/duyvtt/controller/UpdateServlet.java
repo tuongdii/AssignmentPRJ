@@ -45,7 +45,6 @@ public class UpdateServlet extends HttpServlet {
         String username = request.getParameter("txtUsername");
         String lastname = request.getParameter("txtLastname");
         String checkAdmin = request.getParameter("chkAdmin");
-        String searchValue = request.getParameter("lastSearchValue");
         boolean isAdmin = false;
         if (checkAdmin != null) {
             isAdmin = true;
@@ -75,7 +74,6 @@ public class UpdateServlet extends HttpServlet {
             ServletContext context = request.getServletContext();
             Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");
             url = siteMapProp.getProperty(SEARCH_LAST_NAME_SERVLET);
-            url = url + "?txtSearchValue=" + searchValue;
             RequestDispatcher rd = request.getRequestDispatcher(url);
             rd.forward(request, response);
 

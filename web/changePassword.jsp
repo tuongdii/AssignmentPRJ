@@ -15,16 +15,17 @@
     <body>
         <h1>Change Password Page</h1>
         <form action="changePasswordAction" method="POST">
-            <c:set var="errors" value="${requestScope.CHANGEPASSWORD_ERROR}"/>
-            <c:set var="info" value = "${requestScope.CHANGEPASSWORD_SUCCESS}"/>
+            <c:set var="errors" value="${sessionScope.CHANGEPASSWORD_ERROR}"/>
             Username: 
             <c:if test="${empty param.username}">
-                ${requestScope.USERNAME}
+                ${sessionScope.USERNAME}
+                <input type="hidden" name="txtUsername" value="${sessionScope.USERNAME}" />
             </c:if>
             <c:if test="${not empty param.username}">
                 ${param.username}
+                <input type="hidden" name="txtUsername" value="${param.username}" />
             </c:if>
-
+            <br>
             Current password* <input type="password" name="txtCurrent" value="" /><br>
             <c:if test="${not empty errors.wrongPassword}">
                 <font color ="red">
@@ -43,12 +44,8 @@
                 ${errors.confirmNotMatch}
                 </font><br>
             </c:if>
+                <input type="hidden" name="txtSearchValue" value="${param.lastSearchValue}" />
             <input type="submit" value="Save Changes" name="btAction" /><br>
-            <c:if test="${not empty info}">
-                <font color ="red">
-                ${info}
-                </font><br>
-            </c:if>
         </form>
     </body>
 </html>

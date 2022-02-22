@@ -6,19 +6,24 @@
 package duyvtt.controller;
 
 import duyvtt.cart.CartObject;
+import duyvtt.product.ProductDAO;
 import java.io.IOException;
+import java.sql.SQLException;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author DELL
  */
 public class AddItemToCartServlet extends HttpServlet {
-    private final String SHOPPING_PAGE = "shopPage";
+    private final Logger LOGGER = Logger.getLogger(AddItemToCartServlet.class);
+    private final String SHOPPING_PAGE = "shop";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -33,21 +38,30 @@ public class AddItemToCartServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String url = SHOPPING_PAGE;
+
         try {
             //1. Customer goes to cart place
             HttpSession session = request.getSession();
             //2. Customer take a cart
             CartObject cart = (CartObject) session.getAttribute("CART");
-            if (cart == null){
+            if (cart == null) {
                 cart = new CartObject();
             }
             //3. customer takes item
-            String id = request.getParameter("cboComestic");
-            //4. customer drops item to cart
-            cart.addItemToCart(id);
+            String listProductsID[] = request.getParameterValues("chkProduct");
+            ProductDAO dao = new ProductDAO();
+             //4. customer drops item to cart
+            for (String id : listProductsID) {
+                cart.addItemToCart(dao.getProductByID(id));
+            }
+  
             session.setAttribute("CART", cart);
-            
-        }finally{
+
+        } catch (SQLException ex) {
+            LOGGER.info(ex);
+        } catch (NamingException ex) {
+            LOGGER.info(ex);
+        } finally {
             //5. redirect to online shopping page
             response.sendRedirect(url);
         }

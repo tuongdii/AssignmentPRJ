@@ -6,21 +6,25 @@
 package duyvtt.controller;
 
 import duyvtt.cart.CartObject;
+import duyvtt.product.ProductDAO;
+import duyvtt.product.ProductDTO;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.Map;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author DELL
  */
 public class RemoveItemsFromCartServlet extends HttpServlet {
-
+    private final Logger LOGGER = Logger.getLogger(RemoveItemsFromCartServlet.class);
     private final String VIEW_CART_PAGE = "viewCart";
 
     /**
@@ -43,14 +47,15 @@ public class RemoveItemsFromCartServlet extends HttpServlet {
                 CartObject cart = (CartObject) session.getAttribute("CART");
                 if (cart != null) {
                     //2. Customer take items
-                    Map<String, Integer> item = cart.getItems();
+                    Map<ProductDTO, Integer> item = cart.getItems();
                     if (item != null) {
                         //4. get all selected Items
                         String[] removedItems = request.getParameterValues("chkItem");
+                        ProductDAO dao = new ProductDAO();
                         if (removedItems != null) {
                             //5. Remove each iteam from cart
                             for (String items : removedItems) {
-                                cart.removeItemFromCart(items);
+                                cart.removeItemFromCart(dao.getProductByID(items));
                             }
                             session.setAttribute("CART", cart);
                         }
@@ -58,6 +63,10 @@ public class RemoveItemsFromCartServlet extends HttpServlet {
                 }
             }
 
+        } catch (SQLException ex) {
+            LOGGER.info(ex);
+        } catch (NamingException ex) {
+            LOGGER.info(ex);
         } finally {
             //6. refresh = call view cart again
             response.sendRedirect(VIEW_CART_PAGE);

@@ -4,9 +4,9 @@
  * and open the template in the editor.
  */
 package duyvtt.product;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  *
@@ -68,6 +68,32 @@ public class ProductDTO implements Serializable{
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + Objects.hashCode(this.id);
+        hash = 97 * hash + Objects.hashCode(this.name);
+        hash = 97 * hash + Objects.hashCode(this.price);
+        hash = 97 * hash + Objects.hashCode(this.description);
+        hash = 97 * hash + this.quantity;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ProductDTO other = (ProductDTO) obj;
+        return true;
     }
     
 }

@@ -26,11 +26,11 @@
         </form>
         <form action="searchAccountAction">
             Search Value <input type="text" name="txtSearchValue" 
-                                value="${param.txtSearchValue}" />
+                                value="${sessionScope.SEARCH_VALUE}" />
             <input type="submit" value="Search" name="btAction" />
         </form></br>
         
-        <c:set var="searchValue" value="${param.txtSearchValue}"/>
+        <c:set var="searchValue" value="${sessionScope.SEARCH_VALUE}"/>
         <c:if test="${not empty searchValue}">
             <c:set var="result" value="${requestScope.SEARCH_RESULT}"/>
             <c:if test="${not empty result}">
@@ -75,15 +75,13 @@
                                     />
                                 </td>
                                 <td>
-                                    <c:url var="deleteUrl" value="deleteAccountAction">
+                                    <c:url var="deleteUrl" value="deleteCofirm">
                                         <c:param name="username" value="${dto.username}"/>
-                                        <c:param name="lastSearchValue" value="${searchValue}"/>
                                     </c:url>
                                     <a href="${deleteUrl}">Delete</a>
                                 </td>
                                 <td>
-                                    <input type="submit" value="Update" name="btAction" />
-                                    <input type="hidden" name="lastSearchValue" value="${searchValue}" />                                        
+                                    <input type="submit" value="Update" name="btAction" />                                     
                                 </td>        
                         </tr> 
                         </form>
@@ -100,7 +98,12 @@
                 <font color="red">
                     ${requestScope.UPDATE_ERRORS.getFullNameLengthErr()}
                 </font>
-            </c:if>    
+            </c:if>   
+            <c:if test="${not empty requestScope.CHANGEPASSWORD_INFO}">
+                <font color="red">
+                    ${requestScope.CHANGEPASSWORD_INFO}
+                </font>
+            </c:if> 
         </c:if>
       
     </body>

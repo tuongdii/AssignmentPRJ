@@ -12,16 +12,13 @@ import duyvtt.utils.SecurityHelper;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
-import java.util.Properties;
-import java.util.logging.Level;
 import javax.naming.NamingException;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
 import org.apache.log4j.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -31,8 +28,8 @@ public class ChangePasswordServlet extends HttpServlet {
 
     private final Logger LOGGER = Logger.getLogger(ChangePasswordServlet.class);
 
-    private static String CHANGE_PASSWORD_PAGE = "changePassword";
-
+    private static String SEARCH_LASTNAME_CONTROLLER = "searchAccountAction";
+    private static String ERROR_PAGE = "changePassword";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -50,18 +47,23 @@ public class ChangePasswordServlet extends HttpServlet {
         String currentPassword = request.getParameter("txtCurrent");
         String newPassword = request.getParameter("txtNew");
         String confirmPassword = request.getParameter("txtConfirm");
-
+        HttpSession session = request.getSession(true);
+        if(session.getAttribute("CHANGEPASSWORD_ERROR") != null){
+            session.removeAttribute("CHANGEPASSWORD_ERROR");
+        }
+        if(session.getAttribute("CHANGEPASSWORD_SUCCESS") != null){
+            session.removeAttribute("CHANGEPASSWORD_SUCCESS");
+        }
         RegistrationChangePasswordError error = new RegistrationChangePasswordError();
         boolean foundError = false;
-        String url = CHANGE_PASSWORD_PAGE;
+        String url = ERROR_PAGE;
+       
         try {
-            request.setAttribute("USERNAME", username);
             String hashedCurrentPassword = SecurityHelper.hashString(currentPassword);
             String hashedNewPassword = SecurityHelper.hashString(newPassword);
             String hashedConfirmPassword = SecurityHelper.hashString(confirmPassword);
 
             RegistrationDAO dao = new RegistrationDAO();
-            System.out.println(username);
             RegistrationDTO dto = dao.checkLogin(username, hashedCurrentPassword);
             if(dto == null){
                 foundError = true;
@@ -75,12 +77,15 @@ public class ChangePasswordServlet extends HttpServlet {
                 foundError = true;
                 error.setPasswordLengthErr("Password is required form 6 to 30 chars");
             }
+            
+            session.setAttribute("USERNAME", username);
             if(foundError){
-                request.setAttribute("CHANGEPASSWORD_ERROR", error);
+                session.setAttribute("CHANGEPASSWORD_ERROR", error);
             }else{
                 boolean result = dao.changePassword(username, hashedNewPassword);
                 if(result){
-                    request.setAttribute("CHANGEPASSWORD_SUCCESS", "Change password successfully.");
+                    url = SEARCH_LASTNAME_CONTROLLER;
+                    session.setAttribute("CHANGEPASSWORD_SUCCESS", "Change password successfully.");
                 }
             }
         } catch (NoSuchAlgorithmException ex) {
@@ -93,11 +98,7 @@ public class ChangePasswordServlet extends HttpServlet {
             LOGGER.error(ex);
             response.sendError(500);
         } finally {
-            ServletContext context = request.getServletContext();
-            Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");
-            url = siteMapProp.getProperty(url);
-            RequestDispatcher rq = request.getRequestDispatcher(url);
-            rq.forward(request, response);
+            response.sendRedirect(url);
         }
     }
 
