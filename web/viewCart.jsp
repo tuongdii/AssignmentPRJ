@@ -19,7 +19,7 @@
         <h1>Your Cart include</h1>
         <c:set var="cart" value="${sessionScope.CART}"/>
         <c:if test="${not empty cart}">
-            <c:set var="items" value="${cart.getItems()}"/>
+            <c:set var="items" value="${cart.items}"/>
             <c:if test="${not empty items}">
                 <form action="removeItems">
                     <table border="1">
@@ -32,19 +32,21 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <c:forEach var="key" items="${items.keySet()}" varStatus="counter">
+                            <c:forEach var="item" items="${items}" varStatus="counter">
+                                <c:set var="dto" value="${item.key}"/>
+                                <c:set var="quantity" value="${item.value}"/>
                                 <tr>
                                     <td>
                                         ${counter.count}
                                     </td>
                                     <td>
-                                        ${key.getName()}
+                                        ${dto.name}
                                     </td>
                                     <td>
-                                        ${items.get(key)}
+                                        ${quantity}
                                     </td>
                                     <td>
-                                        <input type="checkbox" name="chkItem" value="${key.id}" />
+                                        <input type="checkbox" name="chkItem" value="${dto.id}" />
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -59,6 +61,7 @@
                         </tbody>
                     </table>
                 </form>
+                <a href="checkout"><button>Check out</button></a>
             </c:if>
         </c:if>
         <c:if test="${empty cart}">

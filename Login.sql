@@ -18,7 +18,57 @@ CREATE TABLE Product (
     CONSTRAINT PK_Product PRIMARY KEY (id),
 )
 GO
+CREATE TABLE Orders(
+	id int IDENTITY,
+	fullname nvarchar(100),
+	total money,
+	CONSTRAINT PK_Orders PRIMARY KEY (id),
+)
 GO
+CREATE TABLE OrderDetail(
+	id              INT             IDENTITY,
+    ordersId        INT             NOT NULL,
+    productId             VARCHAR(30)     NOT NULL,
+    price           MONEY           NOT NULL,
+    quantity        INT             NOT NULL,
+    total           MONEY           NOT NULL,
+    CONSTRAINT PK_OrderDetail PRIMARY KEY (id),
+    CONSTRAINT FK_OrderDetail_Product FOREIGN KEY (productId) REFERENCES Product(id),
+    CONSTRAINT FK_OrderDetail_Orders FOREIGN KEY (ordersId) REFERENCES Orders(id)
+)
+GO
+CREATE TRIGGER Trigger_OrderDetail
+ON OrderDetail AFTER INSERT
+AS
+BEGIN
+	Declare @ordersId INT;
+	Declare @productId  VARCHAR(30);
+	Declare @quantity INT;
+	Declare @total MONEY;
+
+	SELECT @ordersId = ordersId, @productId = productId, @quantity = quantity, @total = total
+	FROM inserted
+
+	IF((SELECT quantity FROM Product WHERE id = @productId) >= @quantity)
+	BEGIN
+		UPDATE Product
+		SET quantity = quantity - @quantity
+		WHERE id = @productId
+
+		UPDATE Orders
+		SET total = total + @total
+		WHERE id = @ordersId
+	END
+	ELSE
+		ROLLBACK TRAN;
+END
+GO
+
+
+INSERT INTO Orders VALUES (N'Võ Thị Tường Duy', 0);
+INSERT INTO OrderDetail VALUES ( 1, 'BOOK001', 80, 10, 800)
+
+
 INSERT INTO Registration(username, password, lastname, isAdmin) VALUES ('tuongdii', '44c1bc87d6067efc72a3f7ba290cf297', N'Tường Duy', 1)
 GO
 INSERT INTO Registration(username, password, lastname, isAdmin) VALUES ('duynam', '6224818cfe08329f1c9d542b3eba96fa', N'Duy Nam', 0)

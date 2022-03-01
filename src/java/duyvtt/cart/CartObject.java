@@ -5,15 +5,10 @@
  */
 package duyvtt.cart;
 
-import duyvtt.product.ProductDAO;
 import duyvtt.product.ProductDTO;
 import java.io.Serializable;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.naming.NamingException;
 
 /**
  *
@@ -75,5 +70,4 @@ public class CartObject implements Serializable {
         }
         return 0;
     }
-
 }

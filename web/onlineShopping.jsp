@@ -33,7 +33,7 @@
                     </thead>
                     <tbody>
                         <c:forEach var="product" items="${products}" varStatus="counter">
-
+                            <c:if test="${product.quantity > 0}">
                             <tr>
                                 <td>
                                     ${counter.count}
@@ -65,7 +65,7 @@
                                     <a href="${addItemUrl}"><button type="button">Add To Cart</button></a>
                                 </td>
                             </tr>
-                            
+                            </c:if>
                         </c:forEach>
                             <tr>
                                   <th colspan="5">

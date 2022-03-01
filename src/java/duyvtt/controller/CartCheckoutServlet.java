@@ -5,10 +5,16 @@
  */
 package duyvtt.controller;
 
-import duyvtt.registration.RegistrationDAO;
-import duyvtt.registration.RegistrationInsertError;
+import duyvtt.cart.CartObject;
+import duyvtt.cart.OrderService;
+import duyvtt.orderDetail.OrderDetailDTO;
+import duyvtt.product.ProductDTO;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
@@ -17,17 +23,17 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
 /**
  *
  * @author DELL
  */
-public class UpdateServlet extends HttpServlet {
-
-    private final Logger LOGGER = Logger.getLogger(UpdateServlet.class);
-    private final String SEARCH_LAST_NAME_SERVLET = "searchAccountAction";
-
+public class CartCheckoutServlet extends HttpServlet {
+    private final Logger LOGGER = Logger.getLogger(CartCheckoutServlet.class);
+    private final String SHOP_PAGE = "shopPage";
+    private final String VIEW_CART = "viewCart";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -40,41 +46,48 @@ public class UpdateServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        request.setCharacterEncoding("utf-8");
-
-        String username = request.getParameter("txtUsername");
-        String lastname = request.getParameter("txtLastname");
-        String checkAdmin = request.getParameter("chkAdmin");
-        boolean isAdmin = false;
-        if (checkAdmin != null) {
-            isAdmin = true;
-        }
-        String url = SEARCH_LAST_NAME_SERVLET;
-
-        RegistrationInsertError error = new RegistrationInsertError();
-        boolean foundError = false;
+        request.setCharacterEncoding("UTF-8");
+        String fullname = request.getParameter("txtFullname");
+        String url = VIEW_CART;
         try {
-            if (lastname.trim().length() < 2 || lastname.trim().length() > 50) {
-                foundError = true;
-                error.setFullNameLengthErr("Last name is required form 2 to 50 chars");
+            //1. staff goes to cart place
+            HttpSession session = request.getSession(false);
+            if (session != null){
+                //2. staff take customer's cart
+                CartObject cart = (CartObject) session.getAttribute("CART");
+                if (cart != null){
+                    //create OrderDetailDTO List
+                    List<OrderDetailDTO> orderDetailList = new ArrayList<>();
+                    Map<ProductDTO, Integer> items = cart.getItems();
+                    if (items != null){
+                        for (ProductDTO item : items.keySet()) {
+                            String productId = item.getId();
+                            int quantity = items.get(item);
+                            BigDecimal price = item.getPrice();
+                            BigDecimal total =  price.multiply(BigDecimal.valueOf(quantity));
+                            OrderDetailDTO dto = new OrderDetailDTO(productId, price, quantity, total);
+                            
+                            //add dto to orderdetail list
+                            orderDetailList.add(dto);
+                        }
+                        OrderService service = new OrderService();
+                        boolean result = service.checkoutService(fullname, orderDetailList);
+                        if(result){
+                            url = SHOP_PAGE;
+                            session.removeAttribute("CART");
+                        }
+                    }
+                }
             }
-            if (foundError) {
-                request.setAttribute("UPDATE_ERRORS", error);
-            } else {
-                RegistrationDAO dao = new RegistrationDAO();
-                boolean result = dao.updateAccount(username, lastname, isAdmin);
-            }
-        } catch (SQLException e) {
-            LOGGER.error(e);
-        } catch (NamingException e) {
-            LOGGER.error(e);
-        } finally {
+        } catch (SQLException ex) {
+            LOGGER.info(ex);
+        } catch (NamingException ex) {
+            LOGGER.info(ex);
+        }finally{
             ServletContext context = request.getServletContext();
             Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");
-            url = siteMapProp.getProperty(SEARCH_LAST_NAME_SERVLET);
-            RequestDispatcher rd = request.getRequestDispatcher(url);
-            rd.forward(request, response);
-
+            RequestDispatcher rq = request.getRequestDispatcher(siteMapProp.getProperty(url));
+            rq.forward(request, response);
         }
     }
 

@@ -11,7 +11,6 @@ import duyvtt.utils.SecurityHelper;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
-import java.util.logging.Level;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -45,7 +44,6 @@ public class AutoLoginServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         String url = LOGIN_PAGE;
-        boolean foundError = false;
         try {
             //1. Get Coolies form request
             Cookie[] cookies = request.getCookies();
@@ -73,19 +71,13 @@ public class AutoLoginServlet extends HttpServlet {
             }//end cookies is existes
         } catch (SQLException ex) {
             LOGGER.error(ex);
-            foundError = true;
         } catch (NamingException ex) {
             LOGGER.error(ex);
-            foundError = true;
         } catch (NoSuchAlgorithmException ex) {
             LOGGER.error(ex);
-            foundError = true;
         } finally {
-            if (!foundError) {
-                response.sendRedirect(url);
-            } else {
-                response.sendError(500);
-            }
+            response.sendRedirect(url);
+            
         }
     }
 

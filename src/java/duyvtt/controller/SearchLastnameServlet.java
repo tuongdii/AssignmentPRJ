@@ -44,6 +44,7 @@ public class SearchLastnameServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+        request.setCharacterEncoding("UTF-8");
         String searchValue = request.getParameter("txtSearchValue");
         HttpSession session = request.getSession(false);
         if (searchValue == null){
@@ -61,9 +62,15 @@ public class SearchLastnameServlet extends HttpServlet {
                 RegistrationDAO dao = new RegistrationDAO();
                 dao.searchLastname(searchValue);
                 List<RegistrationDTO> result = dao.getAccounts();
+                RegistrationDTO user = (RegistrationDTO) session.getAttribute("USER");
+                for (RegistrationDTO registrationDTO : result) {
+                    if(registrationDTO.getUsername().equals(user.getUsername())){
+                        result.remove(registrationDTO);
+                    }
+                }
                 request.setAttribute("SEARCH_RESULT", result);
                 session.setAttribute("SEARCH_VALUE", searchValue);
-                boolean role = ((RegistrationDTO) session.getAttribute("USER")).isRole();
+                boolean role = user.isRole();
                 if(role == true){
                     url = SEARCH_PAGE_ADMIN;
                 }
