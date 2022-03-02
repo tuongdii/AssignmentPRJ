@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
  */
 public class CartCheckoutServlet extends HttpServlet {
     private final Logger LOGGER = Logger.getLogger(CartCheckoutServlet.class);
-    private final String SHOP_PAGE = "shopPage";
+    private final String SHOP_PAGE = "shop";
     private final String VIEW_CART = "viewCart";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -74,6 +74,7 @@ public class CartCheckoutServlet extends HttpServlet {
                         boolean result = service.checkoutService(fullname, orderDetailList);
                         if(result){
                             url = SHOP_PAGE;
+                            request.setAttribute("CHECKOUT_INFO", "Checkout successfully!!");
                             session.removeAttribute("CART");
                         }
                     }

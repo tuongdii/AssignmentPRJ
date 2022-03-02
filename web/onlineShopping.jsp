@@ -15,6 +15,10 @@
     </head>
     <body>
         <h1>Online Shopping Page</h1>
+        <c:set var="checkoutInfo" value="${requestScope.CHECKOUT_INFO}"/>
+        <c:if test="${not empty checkoutInfo}">
+            <font color="red">${checkoutInfo}</font>
+        </c:if>
         <c:set var="products" value="${requestScope.LIST_PRODUCT}"/>
         <c:set var="cart" value="${sessionScope.CART}"/>
         <c:if test="${not empty products}">

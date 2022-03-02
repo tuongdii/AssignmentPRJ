@@ -9,16 +9,23 @@ and open the template in the editor.
         <title>Login</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="navigationStyle.css">
     </head>
     <body>
+        <nav>
+            <label class="logo">Assignment PRJ</label>
+            <ul>
+                <li><a href="shop">Shopping</a></li>
+                <li><a href="register">Sign Up</a></li>
+            </ul>
+            
+        </nav>
         <h1>Login Page</h1>
         <form action="loginAction" method="POST">
             Username <input type="text" name="txtUsername" value="" /><br>
             Password <input type="password" name="txtPassword" value="" /><br>
             <input type="submit" value="Login" name="btAction" />
             <input type="reset" value="Reset" />
-        </form>
-        <a href="shop">Shopping Now!!!</a> <br>
-        <a href="register">Click here to Sign Up</a>
+        </form>       
     </body>
 </html>

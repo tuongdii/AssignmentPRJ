@@ -14,7 +14,7 @@
     </head>
     <body>
         <h1>Create Account</h1>
-        <form action="DispatchController" method="POST">          
+        <form action="registerAction" method="POST">          
             <c:set var="errors" value="${requestScope.INSERT_ERRORS}"/>
             Username* <input type="text" name="txtUsername" value="${param.txtUsername}" /> (6 - 20 chars) <br>
             <c:if test="${not empty errors.usernameLengthErr}">
