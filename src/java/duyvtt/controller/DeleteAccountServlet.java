@@ -6,6 +6,7 @@
 package duyvtt.controller;
 
 import duyvtt.registration.RegistrationDAO;
+import duyvtt.utils.MyApplicationConstants;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -25,7 +26,7 @@ import org.apache.log4j.Logger;
 public class DeleteAccountServlet extends HttpServlet {
 
     private final Logger LOGGER = Logger.getLogger(DeleteAccountServlet.class);
-    private final String SEARCH_LATS_NAME_SERVLET = "searchAccountAction";
+   
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -41,16 +42,16 @@ public class DeleteAccountServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         String username = request.getParameter("username");
         boolean foundError = false;
-        String url = SEARCH_LATS_NAME_SERVLET;
+        ServletContext context = request.getServletContext();
+                Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");
+        String url = siteMapProp.getProperty(MyApplicationConstants.DeleteAccountFeature.SEARCH_LATS_NAME_SERVLET);
         try {
             //call DAO
             RegistrationDAO dao = new RegistrationDAO();
             boolean result = dao.deleteAccount(username);
             if (result) {
-                //.call previous function again
-                ServletContext context = request.getServletContext();
-                Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");
-                url = siteMapProp.getProperty(SEARCH_LATS_NAME_SERVLET);
+                String deleteInfo = username + " account has been deleted successfully.";
+                request.setAttribute("DELETE_INFO", deleteInfo);
             }//end if delete successfully
         } catch (SQLException e) {
             foundError = true;

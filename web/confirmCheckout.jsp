@@ -63,6 +63,11 @@
                     Enter full name: <input type="text" name="txtFullname" value="" /><br>
                     <input type="submit" value="Checkout" name="btAction" />
                 </form>
+                <c:if test="${not empty requestScope.CHECKOUT_ERROR}">
+                    <font color="red">
+                    ${requestScope.CHECKOUT_ERROR}
+                    </font>
+                </c:if>
                 <a href="viewCart"><button>Cancel</button></a>
             </c:if>
         </c:if>

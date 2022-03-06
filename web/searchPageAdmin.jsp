@@ -13,23 +13,29 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Search</title>
+        <link rel="stylesheet" type="text/css" href="navigationStyle.css">
     </head>
     <body>
+        <nav>
+            <label class="logo">Assignment PRJ</label>
+            <ul>
+                <li><a href="shop">Shopping</a></li>
+                <li><a href="logoutAction">Log out</a></li>
+            </ul>
+        </nav>
         <font color="red">
         <c:if test="${not empty sessionScope.USER.lastname}">
             Welcome, ${sessionScope.USER.lastname}
         </c:if>
         </font>
         <h1>Search Page</h1>
-        <form action="logoutAction">
-            <input type="submit" value="Logout" name="btAction" />
-        </form>
+
         <form action="searchAccountAction">
             Search Value <input type="text" name="txtSearchValue" 
                                 value="${sessionScope.SEARCH_VALUE}" />
             <input type="submit" value="Search" name="btAction" />
         </form></br>
-        
+
         <c:set var="searchValue" value="${sessionScope.SEARCH_VALUE}"/>
         <c:if test="${not empty searchValue}">
             <c:set var="result" value="${requestScope.SEARCH_RESULT}"/>
@@ -39,7 +45,6 @@
                         <tr>
                             <th>No.</th>
                             <th>Username</th>
-                            <th>Password</th>
                             <th>Full Name</th>
                             <th>Role</th>
                             <th>Delete</th>
@@ -56,13 +61,7 @@
                                 <td>
                                     ${dto.username}
                                     <input type="hidden" name="txtUsername" 
-                                                   value="${dto.username}" />
-                                </td>
-                                <td>       
-                                   <c:url var="changePasswordUrl" value="changePassword">
-                                        <c:param name="username" value="${dto.username}"/>
-                                    </c:url>    
-                                    <a href="${changePasswordUrl}"><button type="button">Change Password</button></a>
+                                           value="${dto.username}" />
                                 </td>
                                 <td>
                                     <input type="text" name="txtLastname" value="${dto.lastname}"/>                                   
@@ -72,7 +71,7 @@
                                            <c:if test="${dto.role == true}" >
                                                checked="checked"
                                            </c:if>
-                                    />
+                                           />
                                 </td>
                                 <td>
                                     <c:url var="deleteUrl" value="deleteCofirm">
@@ -83,28 +82,33 @@
                                 <td>
                                     <input type="submit" value="Update" name="btAction" />                                     
                                 </td>        
-                        </tr> 
+                            </tr> 
                         </form>
-                        </c:forEach>
-                        
-                    </tbody>
-                </table>
+                    </c:forEach>
 
-            </c:if>
-            <c:if test="${empty result}">
-                <h2>No record is matched!!</h2>
-            </c:if>
-            <c:if test="${not empty requestScope.UPDATE_ERRORS}">
-                <font color="red">
-                    ${requestScope.UPDATE_ERRORS.getFullNameLengthErr()}
-                </font>
-            </c:if>   
-            <c:if test="${not empty requestScope.CHANGEPASSWORD_INFO}">
-                <font color="red">
-                    ${requestScope.CHANGEPASSWORD_INFO}
-                </font>
-            </c:if> 
+                </tbody>
+            </table>
+
         </c:if>
-      
-    </body>
+        <c:if test="${empty result}">
+            <h2>No record is matched!!</h2>
+        </c:if>
+        <c:if test="${not empty requestScope.UPDATE_ERRORS}">
+            <font color="red">
+            ${requestScope.UPDATE_ERRORS.getFullNameLengthErr()}
+            </font>
+        </c:if>  
+        <c:if test="${not empty requestScope.DELETE_INFO}">
+            <font color="red">
+            ${requestScope.DELETE_INFO}
+            </font>
+        </c:if>  
+        <c:if test="${not empty requestScope.UPDATE_INFO}">
+            <font color="red">
+            ${requestScope.UPDATE_INFO}
+            </font>
+        </c:if>      
+    </c:if>
+
+</body>
 </html>

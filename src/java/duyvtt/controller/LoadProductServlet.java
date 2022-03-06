@@ -7,6 +7,7 @@ package duyvtt.controller;
 
 import duyvtt.product.ProductDAO;
 import duyvtt.product.ProductDTO;
+import duyvtt.utils.MyApplicationConstants;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -26,8 +27,9 @@ import org.apache.log4j.Logger;
  * @author DELL
  */
 public class LoadProductServlet extends HttpServlet {
+
     private final Logger LOGGER = Logger.getLogger(LoadProductServlet.class);
-    private final String SHOPPING_PAGE = "shopPage";
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -40,6 +42,9 @@ public class LoadProductServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
+        ServletContext context = request.getServletContext();
+        Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");
+        String url = siteMapProp.getProperty(MyApplicationConstants.LoadProductFeature.SHOPPING_PAGE);
         try {
             ProductDAO dao = new ProductDAO();
             List<ProductDTO> listProduct = new ArrayList<ProductDTO>();
@@ -47,12 +52,12 @@ public class LoadProductServlet extends HttpServlet {
             request.setAttribute("LIST_PRODUCT", listProduct);
         } catch (SQLException ex) {
             LOGGER.info(ex);
+            response.sendError(500);
         } catch (NamingException ex) {
             LOGGER.info(ex);
-        }finally{
-            ServletContext context = request.getServletContext();
-            Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");
-            RequestDispatcher rd = request.getRequestDispatcher(siteMapProp.getProperty(SHOPPING_PAGE));
+            response.sendError(500);
+        } finally {
+            RequestDispatcher rd = request.getRequestDispatcher(url);
             rd.forward(request, response);
         }
     }

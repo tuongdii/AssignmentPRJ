@@ -13,8 +13,16 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Search</title>
+        <link rel="stylesheet" type="text/css" href="navigationStyle.css">
     </head>
     <body>
+        <nav>
+            <label class="logo">Assignment PRJ</label>
+            <ul>
+                <li><a href="shop">Shopping</a></li>
+                <li><a href="logoutAction">Log out</a></li>
+            </ul>
+        </nav>
         <font color="red">
         <c:if test="${not empty sessionScope.USER.lastname}">
             Welcome, ${sessionScope.USER.lastname}
@@ -58,14 +66,14 @@
                                     ${dto.lastname}                                  
                                 </td>
                                 <td>
-                                   
-                                           <c:if test="${dto.role == true}" >
-                                               Admin
-                                           </c:if>
-                                           <c:if test="${dto.role == false}" >
-                                               User
-                                           </c:if>
-                                               
+
+                                    <c:if test="${dto.role == true}" >
+                                        Admin
+                                    </c:if>
+                                    <c:if test="${dto.role == false}" >
+                                        User
+                                    </c:if>
+
                                 </td>
 
                             </tr> 

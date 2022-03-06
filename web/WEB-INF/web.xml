@@ -65,10 +65,6 @@
         <servlet-class>duyvtt.controller.RegisterServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ChangePasswordServlet</servlet-name>
-        <servlet-class>duyvtt.controller.ChangePasswordServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>LogoutServlet</servlet-name>
         <servlet-class>duyvtt.controller.LogoutServlet</servlet-class>
     </servlet>
@@ -133,10 +129,6 @@
         <param-value>WEB-INF\UserAuthentication.properties</param-value>
     </context-param>
     <servlet-mapping>
-        <servlet-name>ChangePasswordServlet</servlet-name>
-        <url-pattern>/ChangePasswordServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
         <url-pattern>/LogoutServlet</url-pattern>
     </servlet-mapping>
@@ -155,4 +147,16 @@
         <res-auth>Container</res-auth>
         <res-sharing-scope>Shareable</res-sharing-scope>
     </resource-ref>
+    <error-page>
+        <error-code>403</error-code>
+        <location>/forbiddenError.html</location>
+    </error-page>
+    <error-page>
+        <error-code>404</error-code>
+        <location>/fileNotFound.html</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/internalServerError.html</location>
+    </error-page>
 </web-app>

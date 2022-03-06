@@ -5,6 +5,7 @@
  */
 package duyvtt.controller;
 
+import duyvtt.utils.MyApplicationConstants;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -18,7 +19,6 @@ import javax.servlet.http.HttpSession;
  * @author DELL
  */
 public class LogoutServlet extends HttpServlet {
-    private final String LOGIN_PAGE = "login";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -31,7 +31,7 @@ public class LogoutServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String url = LOGIN_PAGE;
+        String url = MyApplicationConstants.LogoutFeature.LOGIN_PAGE;
         try {
             HttpSession session = request.getSession(false);
             if (session == null){

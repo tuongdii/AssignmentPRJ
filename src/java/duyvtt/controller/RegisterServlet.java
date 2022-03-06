@@ -8,6 +8,7 @@ package duyvtt.controller;
 import duyvtt.registration.RegistrationDAO;
 import duyvtt.registration.RegistrationDTO;
 import duyvtt.registration.RegistrationInsertError;
+import duyvtt.utils.MyApplicationConstants;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -26,8 +27,7 @@ import org.apache.log4j.Logger;
  */
 public class RegisterServlet extends HttpServlet {
     private final Logger LOGGER = Logger.getLogger(RegisterServlet.class);
-    private final String LOGIN_PAGE = "login";
-    private final String ERROR_PAGE = "registerPage";
+    
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -50,7 +50,7 @@ public class RegisterServlet extends HttpServlet {
 
         RegistrationInsertError errors = new RegistrationInsertError();
         boolean foundErr = false;
-        String url = ERROR_PAGE;
+        String url = MyApplicationConstants.RegisterFeature.ERROR_PAGE;
 
         try {
             //1. Check all user errors
@@ -78,7 +78,7 @@ public class RegisterServlet extends HttpServlet {
                 RegistrationDAO dao = new RegistrationDAO();
                 boolean result = dao.insertAccount(dto);
                 if (result) {
-                    url = LOGIN_PAGE;
+                    url = MyApplicationConstants.RegisterFeature.LOGIN_PAGE;
                 }
             }
         } catch (SQLException ex) {

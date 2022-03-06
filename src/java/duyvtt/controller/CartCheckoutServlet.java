@@ -9,6 +9,7 @@ import duyvtt.cart.CartObject;
 import duyvtt.cart.OrderService;
 import duyvtt.orderDetail.OrderDetailDTO;
 import duyvtt.product.ProductDTO;
+import duyvtt.utils.MyApplicationConstants;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -31,9 +32,9 @@ import org.apache.log4j.Logger;
  * @author DELL
  */
 public class CartCheckoutServlet extends HttpServlet {
+
     private final Logger LOGGER = Logger.getLogger(CartCheckoutServlet.class);
-    private final String SHOP_PAGE = "shop";
-    private final String VIEW_CART = "viewCart";
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -48,32 +49,41 @@ public class CartCheckoutServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
         String fullname = request.getParameter("txtFullname");
-        String url = VIEW_CART;
+        String url = MyApplicationConstants.CheckoutFeature.VIEW_CART;
         try {
+            if (fullname.isEmpty()) {
+                request.setAttribute("CHECKOUT_ERROR", "Please enter full name.");
+                url = MyApplicationConstants.CheckoutFeature.CHECK_OUT;
+            } else {
+                if (fullname.trim().length() < 2 || fullname.trim().length() > 50) {
+                    request.setAttribute("CHECKOUT_ERROR", "Full name is required form 2 to 50 chars");
+                    url = MyApplicationConstants.CheckoutFeature.CHECK_OUT;
+                }
+            }
             //1. staff goes to cart place
             HttpSession session = request.getSession(false);
-            if (session != null){
+            if (session != null) {
                 //2. staff take customer's cart
                 CartObject cart = (CartObject) session.getAttribute("CART");
-                if (cart != null){
+                if (cart != null) {
                     //create OrderDetailDTO List
                     List<OrderDetailDTO> orderDetailList = new ArrayList<>();
                     Map<ProductDTO, Integer> items = cart.getItems();
-                    if (items != null){
+                    if (items != null) {
                         for (ProductDTO item : items.keySet()) {
                             String productId = item.getId();
                             int quantity = items.get(item);
                             BigDecimal price = item.getPrice();
-                            BigDecimal total =  price.multiply(BigDecimal.valueOf(quantity));
+                            BigDecimal total = price.multiply(BigDecimal.valueOf(quantity));
                             OrderDetailDTO dto = new OrderDetailDTO(productId, price, quantity, total);
-                            
+
                             //add dto to orderdetail list
                             orderDetailList.add(dto);
                         }
                         OrderService service = new OrderService();
                         boolean result = service.checkoutService(fullname, orderDetailList);
-                        if(result){
-                            url = SHOP_PAGE;
+                        if (result) {
+                            url = MyApplicationConstants.CheckoutFeature.SHOP_PAGE;
                             request.setAttribute("CHECKOUT_INFO", "Checkout successfully!!");
                             session.removeAttribute("CART");
                         }
@@ -82,9 +92,11 @@ public class CartCheckoutServlet extends HttpServlet {
             }
         } catch (SQLException ex) {
             LOGGER.info(ex);
+            response.sendError(500);
         } catch (NamingException ex) {
             LOGGER.info(ex);
-        }finally{
+            response.sendError(500);
+        } finally {
             ServletContext context = request.getServletContext();
             Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");
             RequestDispatcher rq = request.getRequestDispatcher(siteMapProp.getProperty(url));

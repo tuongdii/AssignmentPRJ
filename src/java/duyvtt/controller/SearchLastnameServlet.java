@@ -7,6 +7,7 @@ package duyvtt.controller;
 
 import duyvtt.registration.RegistrationDAO;
 import duyvtt.registration.RegistrationDTO;
+import duyvtt.utils.MyApplicationConstants;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
@@ -26,11 +27,8 @@ import org.apache.log4j.Logger;
  * @author DELL
  */
 public class SearchLastnameServlet extends HttpServlet {
+
     private final Logger LOGGER = Logger.getLogger(SearchLastnameServlet.class);
-    private final String SEARCH_PAGE = "search";
-    private final String SEARCH_PAGE_ADMIN = "searchPageAdmin";
-    private final String SEARCH_PAGE_USER = "searchPageUser";
-    
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -46,47 +44,46 @@ public class SearchLastnameServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
         String searchValue = request.getParameter("txtSearchValue");
+        //get session
         HttpSession session = request.getSession(false);
-        if (searchValue == null){
+        if (searchValue.isEmpty()) {
             searchValue = (String) session.getAttribute("SEARCH_VALUE");
         }
-        String changePasswordInfo = (String) session.getAttribute("CHANGEPASSWORD_SUCCESS");
-        if(changePasswordInfo != null){
-            request.setAttribute("CHANGEPASSWORD_INFO", changePasswordInfo);
-            session.removeAttribute("CHANGEPASSWORD_SUCCESS");
+
+        //get context
+        ServletContext context = request.getServletContext();
+        Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");
+
+        //get user to check role
+        String url = MyApplicationConstants.SearchLastnameFeature.SEARCH_PAGE_USER;
+        RegistrationDTO user = (RegistrationDTO) session.getAttribute("USER");
+        if (user.isRole() == true) {
+            url = MyApplicationConstants.SearchLastnameFeature.SEARCH_PAGE_ADMIN;
         }
-        String url = SEARCH_PAGE;
+
         try {
             if (!searchValue.trim().isEmpty()) {
                 //callDAO
                 RegistrationDAO dao = new RegistrationDAO();
                 dao.searchLastname(searchValue);
                 List<RegistrationDTO> result = dao.getAccounts();
-                RegistrationDTO user = (RegistrationDTO) session.getAttribute("USER");
-                for (RegistrationDTO registrationDTO : result) {
-                    if(registrationDTO.getUsername().equals(user.getUsername())){
-                        result.remove(registrationDTO);
+                for (int i = 0; i < result.size(); i++) {
+                    if (result.get(i).getUsername().equals(user.getUsername())) {
+                        result.remove(result.get(i));
                     }
                 }
+
                 request.setAttribute("SEARCH_RESULT", result);
                 session.setAttribute("SEARCH_VALUE", searchValue);
-                boolean role = user.isRole();
-                if(role == true){
-                    url = SEARCH_PAGE_ADMIN;
-                }
-                if(role == false){
-                    url = SEARCH_PAGE_USER;
-                }
+
             }
         } catch (NamingException ex) {
             LOGGER.error(ex);
         } catch (SQLException ex) {
             LOGGER.error(ex);
+
         } finally {
-            ServletContext context = request.getServletContext();
-            Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");
-            url = siteMapProp.getProperty(url);
-            RequestDispatcher rd = request.getRequestDispatcher(url);
+            RequestDispatcher rd = request.getRequestDispatcher(siteMapProp.getProperty(url));
             rd.forward(request, response);
         }
     }

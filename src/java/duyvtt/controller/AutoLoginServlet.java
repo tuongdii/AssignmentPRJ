@@ -7,6 +7,7 @@ package duyvtt.controller;
 
 import duyvtt.registration.RegistrationDAO;
 import duyvtt.registration.RegistrationDTO;
+import duyvtt.utils.MyApplicationConstants;
 import duyvtt.utils.SecurityHelper;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -27,9 +28,6 @@ import org.apache.log4j.Logger;
 public class AutoLoginServlet extends HttpServlet {
 
     private final Logger LOGGER = Logger.getLogger(AutoLoginServlet.class);
-    private final String LOGIN_PAGE = "login";
-    private final String SEARCH_PAGE_USER = "searchPageUser";
-    private final String SEARCH_PAGE_ADMIN = "searchPageAdmin";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -43,7 +41,7 @@ public class AutoLoginServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String url = LOGIN_PAGE;
+        String url = MyApplicationConstants.AutoLoginFeature.LOGIN_PAGE;
         try {
             //1. Get Coolies form request
             Cookie[] cookies = request.getCookies();
@@ -61,9 +59,9 @@ public class AutoLoginServlet extends HttpServlet {
                         HttpSession session = request.getSession();
                         session.setAttribute("USER", result);
                         if (result.isRole() == true) {
-                            url = SEARCH_PAGE_ADMIN;
+                            url = MyApplicationConstants.AutoLoginFeature.SEARCH_PAGE_ADMIN;
                         } else {
-                            url = SEARCH_PAGE_USER;
+                            url = MyApplicationConstants.AutoLoginFeature.SEARCH_PAGE_USER;
                         }
                         break;
                     }//end authentication is successfully checked

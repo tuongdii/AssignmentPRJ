@@ -7,6 +7,7 @@ package duyvtt.controller;
 
 import duyvtt.registration.RegistrationDAO;
 import duyvtt.registration.RegistrationInsertError;
+import duyvtt.utils.MyApplicationConstants;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -49,7 +50,9 @@ public class UpdateServlet extends HttpServlet {
         if (checkAdmin != null) {
             isAdmin = true;
         }
-        String url = SEARCH_LAST_NAME_SERVLET;
+        ServletContext context = request.getServletContext();
+        Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");
+        String url = siteMapProp.getProperty(MyApplicationConstants.UpdateAccountFeature.SEARCH_LATS_NAME_SERVLET);
 
         RegistrationInsertError error = new RegistrationInsertError();
         boolean foundError = false;
@@ -63,15 +66,17 @@ public class UpdateServlet extends HttpServlet {
             } else {
                 RegistrationDAO dao = new RegistrationDAO();
                 boolean result = dao.updateAccount(username, lastname, isAdmin);
+                if (result) {
+                    request.setAttribute("UPDATE_INFO", username + " account has been updated.");
+                }
             }
         } catch (SQLException e) {
             LOGGER.error(e);
+            response.sendError(500);
         } catch (NamingException e) {
             LOGGER.error(e);
+            response.sendError(500);
         } finally {
-            ServletContext context = request.getServletContext();
-            Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");
-            url = siteMapProp.getProperty(SEARCH_LAST_NAME_SERVLET);
             RequestDispatcher rd = request.getRequestDispatcher(url);
             rd.forward(request, response);
 

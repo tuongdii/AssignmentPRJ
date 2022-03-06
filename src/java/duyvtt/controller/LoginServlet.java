@@ -7,6 +7,7 @@ package duyvtt.controller;
 
 import duyvtt.registration.RegistrationDAO;
 import duyvtt.registration.RegistrationDTO;
+import duyvtt.utils.MyApplicationConstants;
 import duyvtt.utils.SecurityHelper;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -26,10 +27,8 @@ import org.apache.log4j.Logger;
  * @author DELL
  */
 public class LoginServlet extends HttpServlet {
+
     private final Logger LOGGER = Logger.getLogger(LoginServlet.class);
-    private final String SEARCH_PAGE_USER = "searchPageUser";
-    private final String SEARCH_PAGE_ADMIN = "searchPageAdmin";
-    private final String INVALID_PAGE = "invalid";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -43,11 +42,10 @@ public class LoginServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
 
         String username = request.getParameter("txtUsername");
         String password = request.getParameter("txtPassword");
-        String url = INVALID_PAGE;
+        String url = MyApplicationConstants.LoginFeature.INVALID_PAGE;
 
         try {
             String hashedPassword = SecurityHelper.hashString(password);
@@ -63,22 +61,26 @@ public class LoginServlet extends HttpServlet {
                 Cookie cookie = new Cookie(username, password);
                 cookie.setMaxAge(-1);   //means cookie existing until close browser
                 response.addCookie(cookie);
-                if(result.isRole() == true){
-                    url = SEARCH_PAGE_ADMIN;
-                }else{
-                    url = SEARCH_PAGE_USER;
+
+                if (result.isRole() == true) {
+                    url = MyApplicationConstants.LoginFeature.SEARCH_PAGE_ADMIN;
+                } else {
+                    url = MyApplicationConstants.LoginFeature.SEARCH_PAGE_USER;
                 }
 
             }
         } catch (SQLException ex) {
             LOGGER.error(ex);
+
         } catch (NamingException ex) {
             LOGGER.error(ex);
+
         } catch (NoSuchAlgorithmException ex) {
             LOGGER.error(ex);
+
         } finally {
             response.sendRedirect(url);
-            out.close();
+
         }
     }
 
@@ -94,7 +96,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-            processRequest(request, response);      
+        processRequest(request, response);
     }
 
     /**
@@ -108,7 +110,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-            processRequest(request, response);
+        processRequest(request, response);
     }
 
     /**

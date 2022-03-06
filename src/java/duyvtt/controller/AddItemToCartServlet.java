@@ -7,6 +7,7 @@ package duyvtt.controller;
 
 import duyvtt.cart.CartObject;
 import duyvtt.product.ProductDAO;
+import duyvtt.utils.MyApplicationConstants;
 import java.io.IOException;
 import java.sql.SQLException;
 import javax.naming.NamingException;
@@ -22,8 +23,8 @@ import org.apache.log4j.Logger;
  * @author DELL
  */
 public class AddItemToCartServlet extends HttpServlet {
+
     private final Logger LOGGER = Logger.getLogger(AddItemToCartServlet.class);
-    private final String SHOPPING_PAGE = "shop";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,8 +38,8 @@ public class AddItemToCartServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        String url = SHOPPING_PAGE;
-
+        String url = MyApplicationConstants.AddItemToCartFeature.SHOPPING_PAGE;
+        boolean foundError = false;
         try {
             //1. Customer goes to cart place
             HttpSession session = request.getSession();
@@ -50,20 +51,26 @@ public class AddItemToCartServlet extends HttpServlet {
             //3. customer takes item
             String listProductsID[] = request.getParameterValues("chkProduct");
             ProductDAO dao = new ProductDAO();
-             //4. customer drops item to cart
+            //4. customer drops item to cart
             for (String id : listProductsID) {
                 cart.addItemToCart(dao.getProductByID(id));
             }
-  
+
             session.setAttribute("CART", cart);
 
         } catch (SQLException ex) {
             LOGGER.info(ex);
+            foundError = true;
         } catch (NamingException ex) {
             LOGGER.info(ex);
+            foundError = true;
         } finally {
-            //5. redirect to online shopping page
-            response.sendRedirect(url);
+            if (foundError) {
+                response.sendError(500);
+            } else {
+                //5. redirect to online shopping page
+                response.sendRedirect(url);
+            }
         }
     }
 
