@@ -5,6 +5,7 @@
  */
 package duyvtt.utils;
 
+import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import javax.xml.bind.DatatypeConverter;
@@ -13,8 +14,11 @@ import javax.xml.bind.DatatypeConverter;
  *
  * @author DELL
  */
-public class SecurityHelper {
+public final class SecurityUtils implements Serializable{
 
+    private SecurityUtils() {
+    }
+    
     public static String hashString(String password) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("MD5");
         md.update(password.getBytes());

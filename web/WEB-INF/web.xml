@@ -5,8 +5,8 @@
         <filter-class>duyvtt.filter.AuthenticationFilter</filter-class>
     </filter>
     <filter>
-        <filter-name>RoleAuthenticationFilter</filter-name>
-        <filter-class>duyvtt.filter.RoleAuthenticationFilter</filter-class>
+        <filter-name>AuthorizationFilter</filter-name>
+        <filter-class>duyvtt.filter.AuthorizationFilter</filter-class>
     </filter>
     <filter>
         <filter-name>DispatcherFilter</filter-name>
@@ -17,7 +17,7 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
     <filter-mapping>
-        <filter-name>RoleAuthenticationFilter</filter-name>
+        <filter-name>AuthorizationFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
     <filter-mapping>
@@ -72,6 +72,10 @@
         <servlet-name>CartCheckoutServlet</servlet-name>
         <servlet-class>duyvtt.controller.CartCheckoutServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>UpdateQuantityItemServlet</servlet-name>
+        <servlet-class>duyvtt.controller.UpdateQuantityItemServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/LoginServlet</url-pattern>
@@ -121,12 +125,12 @@
         <param-value>WEB-INF\authentication.properties</param-value>
     </context-param>
     <context-param>
-        <param-name>ADMIN_AUTHENTICATION_PROPERTIES_FILE_LOCATION</param-name>
-        <param-value>WEB-INF\AdminAuthentication.properties</param-value>
+        <param-name>ADMIN_AUTHORIZATION_PROPERTIES_FILE_LOCATION</param-name>
+        <param-value>WEB-INF\AdminAuthorization.properties</param-value>
     </context-param>
     <context-param>
-        <param-name>USER_AUTHENTICATION_PROPERTIES_FILE_LOCATION</param-name>
-        <param-value>WEB-INF\UserAuthentication.properties</param-value>
+        <param-name>USER_AUTHORIZATION_PROPERTIES_FILE_LOCATION</param-name>
+        <param-value>WEB-INF\UserAuthorization.properties</param-value>
     </context-param>
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
@@ -135,6 +139,10 @@
     <servlet-mapping>
         <servlet-name>CartCheckoutServlet</servlet-name>
         <url-pattern>/CartCheckoutServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateQuantityItemServlet</servlet-name>
+        <url-pattern>/UpdateQuantityItemServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

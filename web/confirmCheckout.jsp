@@ -12,9 +12,17 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>checkout</title>
+        <link rel="stylesheet" type="text/css" href="navStyle">
     </head>
     <body>
-        <h1>Cofirm Checkout</h1>
+        <nav>
+            <label class="logo">Assignment PRJ</label>
+            <ul>
+                <li><a href="shop">SHOP PAGE</a></li>
+                <li><a href="viewCart">BACK TO YOUR CART</a></li>
+            </ul>
+        </nav>
+        <h1>Confirm Checkout</h1>
         <c:set var="cart" value="${sessionScope.CART}"/>
         <c:if test="${not empty cart}">
             <c:set var="items" value="${CART.items}"/>
@@ -35,19 +43,19 @@
                             <c:set var="dto" value="${item.key}"/>
                             <c:set var="quantity" value="${item.value}"/>
                             <tr>
-                                <td>
+                                <td align="right">
                                     ${counter.count}
                                 </td>
                                 <td>
                                     ${dto.name}
                                 </td>
-                                <td>
+                                <td align="right">
                                     ${quantity}
                                 </td>
-                                <td>
+                                <td align="right">
                                     <fmt:formatNumber type = "currency" value="${dto.price}" maxFractionDigits="2" /> 
                                 </td>
-                                <td>
+                                <td align="right">
                                     <c:set var="total" value="${quantity * dto.price}"/>
                                     <fmt:formatNumber type = "currency" value="${total}" maxFractionDigits="2" /> 
                                     <c:set var="totalPayment" value="${totalPayment + total}"/>
@@ -57,18 +65,22 @@
                     </tbody>
                 </table>
                 <h4>Total Payment: 
-                    <fmt:formatNumber type = "currency" value="${dto.price}" maxFractionDigits="2" /> 
+                    <fmt:formatNumber type = "currency" value="${totalPayment}" maxFractionDigits="2" /> 
                 </h4>
                 <form action="checkoutAction">
-                    Enter full name: <input type="text" name="txtFullname" value="" /><br>
+                    Enter full name: <input type="text" name="txtFullname" 
+                                            <c:if test="${not empty sessionScope.USER.lastname}">
+                                                 value="${sessionScope.USER.lastname}"
+                                            </c:if>                    
+                                            /><br>
                     <input type="submit" value="Checkout" name="btAction" />
+                    <a href="viewCart"><button>Cancel</button></a><br>
                 </form>
                 <c:if test="${not empty requestScope.CHECKOUT_ERROR}">
                     <font color="red">
-                    ${requestScope.CHECKOUT_ERROR}
+                    ${requestScope.CHECKOUT_ERROR.fullNameLengthErr}
                     </font>
                 </c:if>
-                <a href="viewCart"><button>Cancel</button></a>
             </c:if>
         </c:if>
     </body>

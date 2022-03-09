@@ -6,7 +6,7 @@
 package duyvtt.controller;
 
 import duyvtt.registration.RegistrationDAO;
-import duyvtt.utils.MyApplicationConstants;
+import duyvtt.common.Constants;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -39,12 +39,11 @@ public class DeleteAccountServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
         String username = request.getParameter("username");
         boolean foundError = false;
         ServletContext context = request.getServletContext();
-                Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");
-        String url = siteMapProp.getProperty(MyApplicationConstants.DeleteAccountFeature.SEARCH_LATS_NAME_SERVLET);
+        Properties prop = (Properties) context.getAttribute("SITE_MAP");
+        String url = Constants.deleteAccountFeature.SEARCH_LATS_NAME_SERVLET;
         try {
             //call DAO
             RegistrationDAO dao = new RegistrationDAO();
@@ -61,10 +60,10 @@ public class DeleteAccountServlet extends HttpServlet {
             LOGGER.error(e);
         } finally {
             if (!foundError) {
-                RequestDispatcher rd = request.getRequestDispatcher(url);
+                RequestDispatcher rd = request.getRequestDispatcher(prop.getProperty(url));
                 rd.forward(request, response);
             } else {
-                response.sendError(500);
+                response.sendError(response.SC_INTERNAL_SERVER_ERROR);
             }
             
         }

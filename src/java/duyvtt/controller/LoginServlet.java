@@ -7,10 +7,9 @@ package duyvtt.controller;
 
 import duyvtt.registration.RegistrationDAO;
 import duyvtt.registration.RegistrationDTO;
-import duyvtt.utils.MyApplicationConstants;
-import duyvtt.utils.SecurityHelper;
+import duyvtt.common.Constants;
+import duyvtt.utils.SecurityUtils;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import javax.naming.NamingException;
@@ -41,14 +40,13 @@ public class LoginServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
 
         String username = request.getParameter("txtUsername");
         String password = request.getParameter("txtPassword");
-        String url = MyApplicationConstants.LoginFeature.INVALID_PAGE;
+        String url = Constants.loginFeature.INVALID_PAGE;
 
         try {
-            String hashedPassword = SecurityHelper.hashString(password);
+            String hashedPassword = SecurityUtils.hashString(password);
             //call DAO -> new DAO object & call method of DAO
             RegistrationDAO dao = new RegistrationDAO();
             RegistrationDTO result = dao.checkLogin(username, hashedPassword);
@@ -63,21 +61,21 @@ public class LoginServlet extends HttpServlet {
                 response.addCookie(cookie);
 
                 if (result.isRole() == true) {
-                    url = MyApplicationConstants.LoginFeature.SEARCH_PAGE_ADMIN;
+                    url = Constants.loginFeature.SEARCH_PAGE_ADMIN;
                 } else {
-                    url = MyApplicationConstants.LoginFeature.SEARCH_PAGE_USER;
+                    url = Constants.loginFeature.SEARCH_PAGE_USER;
                 }
 
             }
         } catch (SQLException ex) {
             LOGGER.error(ex);
-
+            response.sendError(response.SC_INTERNAL_SERVER_ERROR);
         } catch (NamingException ex) {
             LOGGER.error(ex);
-
+            response.sendError(response.SC_INTERNAL_SERVER_ERROR);
         } catch (NoSuchAlgorithmException ex) {
             LOGGER.error(ex);
-
+            response.sendError(response.SC_INTERNAL_SERVER_ERROR);
         } finally {
             response.sendRedirect(url);
 

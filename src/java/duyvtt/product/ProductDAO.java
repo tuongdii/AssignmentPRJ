@@ -5,7 +5,7 @@
  */
 package duyvtt.product;
 
-import duyvtt.utils.DBHelpers;
+import duyvtt.utils.DBUtils;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -29,7 +29,7 @@ public class ProductDAO implements Serializable{
         ResultSet rs = null;
         List<ProductDTO> listProduct = null;
         try {
-            con = DBHelpers.makeConnection();
+            con = DBUtils.makeConnection();
             if (con != null) {
                 String sql = "SELECT id, name, price, description, quantity "
                         + "FROM Product";
@@ -68,7 +68,7 @@ public class ProductDAO implements Serializable{
         PreparedStatement stm = null;
         ResultSet rs = null;
         try{
-            con = DBHelpers.makeConnection();
+            con = DBUtils.makeConnection();
             if (con != null){
                 String sql = "SELECT name, price, description, quantity "
                         + "FROM Product "

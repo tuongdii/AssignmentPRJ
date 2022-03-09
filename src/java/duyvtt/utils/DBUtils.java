@@ -17,7 +17,11 @@ import javax.sql.DataSource;
  *
  * @author DELL
  */
-public class DBHelpers implements Serializable{
+public final class DBUtils implements Serializable{
+
+    private DBUtils() {
+    }
+    
     public static Connection makeConnection()
         throws /*ClassNotFoundException,*/ SQLException, NamingException{
         //1. get current system file

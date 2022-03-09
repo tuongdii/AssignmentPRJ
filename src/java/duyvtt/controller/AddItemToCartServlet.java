@@ -7,10 +7,13 @@ package duyvtt.controller;
 
 import duyvtt.cart.CartObject;
 import duyvtt.product.ProductDAO;
-import duyvtt.utils.MyApplicationConstants;
+import duyvtt.common.Constants;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Properties;
 import javax.naming.NamingException;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -37,8 +40,9 @@ public class AddItemToCartServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        String url = MyApplicationConstants.AddItemToCartFeature.SHOPPING_PAGE;
+        String url = Constants.addItemToCartFeature.SHOPPING_PAGE;
+         ServletContext context = request.getServletContext();
+        Properties prop = (Properties) context.getAttribute("SITE_MAP");
         boolean foundError = false;
         try {
             //1. Customer goes to cart place
@@ -50,10 +54,14 @@ public class AddItemToCartServlet extends HttpServlet {
             }
             //3. customer takes item
             String listProductsID[] = request.getParameterValues("chkProduct");
-            ProductDAO dao = new ProductDAO();
-            //4. customer drops item to cart
-            for (String id : listProductsID) {
-                cart.addItemToCart(dao.getProductByID(id));
+            if (listProductsID == null) {
+                request.setAttribute("ADD_ERROR", "Please select product before adding to cart.");
+            } else {
+                ProductDAO dao = new ProductDAO();
+                //4. customer drops item to cart
+                for (String id : listProductsID) {
+                    cart.addItemToCart(dao.getProductByID(id));
+                }
             }
 
             session.setAttribute("CART", cart);
@@ -66,10 +74,11 @@ public class AddItemToCartServlet extends HttpServlet {
             foundError = true;
         } finally {
             if (foundError) {
-                response.sendError(500);
+                response.sendError(response.SC_INTERNAL_SERVER_ERROR);
             } else {
                 //5. redirect to online shopping page
-                response.sendRedirect(url);
+                RequestDispatcher rd = request.getRequestDispatcher(prop.getProperty(url));
+                rd.forward(request, response);
             }
         }
     }

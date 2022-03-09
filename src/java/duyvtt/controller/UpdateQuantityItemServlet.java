@@ -5,16 +5,14 @@
  */
 package duyvtt.controller;
 
-import duyvtt.registration.RegistrationDAO;
-import duyvtt.registration.RegistrationDTO;
-import duyvtt.common.Constants;
-import duyvtt.utils.SecurityUtils;
+import duyvtt.cart.CartObject;
+import duyvtt.product.ProductDAO;
+import duyvtt.product.ProductDTO;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.util.Map;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,9 +23,9 @@ import org.apache.log4j.Logger;
  *
  * @author DELL
  */
-public class AutoLoginServlet extends HttpServlet {
+public class UpdateQuantityItemServlet extends HttpServlet {
 
-    private final Logger LOGGER = Logger.getLogger(AutoLoginServlet.class);
+    private final Logger LOGGER = Logger.getLogger(UpdateQuantityItemServlet.class);
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -40,44 +38,40 @@ public class AutoLoginServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String url = Constants.autoLoginFeature.LOGIN_PAGE;
+        String itemId = request.getParameter("txtId");
+        String quantityParam = request.getParameter("txtQuantity");
         try {
-            //1. Get Coolies form request
-            Cookie[] cookies = request.getCookies();
-            if (cookies != null) {
-                //2. Traverse all cookies to check authentication
-                for (Cookie cookie : cookies) {
-                    //3. Get username and password form name value
-                    String username = cookie.getName();
-                    String password = cookie.getValue();
-                    String hashedPassword = SecurityUtils.hashString(password);
-                    //4. call DAO to check authentication
-                    RegistrationDAO dao = new RegistrationDAO();
-                    RegistrationDTO result = dao.checkLogin(username, hashedPassword);
-                    if (result != null) {
-                        HttpSession session = request.getSession();
-                        session.setAttribute("USER", result);
-                        if (result.isRole() == true) {
-                            url = Constants.autoLoginFeature.SEARCH_PAGE_ADMIN;
-                        } else {
-                            url = Constants.autoLoginFeature.SEARCH_PAGE_USER;
+            if (quantityParam.isEmpty()) {
+
+            } else {
+                int quantity = Integer.parseInt(quantityParam);
+                if (quantity > 0) {
+                    //1. Customer gose to his/her cart place
+                    HttpSession session = request.getSession(false);
+                    if (session != null) {
+                        //2. Customer take cart
+                        CartObject cart = (CartObject) session.getAttribute("CART");
+                        if (cart != null) {
+                            //2. Customer take items
+                            Map<ProductDTO, Integer> item = cart.getItems();
+                            if (item != null) {
+                                ProductDAO dao = new ProductDAO();
+                                //remove this items
+                                cart.updateItemQuantity(dao.getProductByID(itemId), quantity);
+                                session.setAttribute("CART", cart);
+                            }
                         }
-                        break;
-                    }//end authentication is successfully checked
-                }//end for traverse cookies
-            }//end cookies is existes
+                    }
+                }
+            }
+        } catch (NumberFormatException ex) {
+            LOGGER.info(ex);
         } catch (SQLException ex) {
-            LOGGER.error(ex);
-            response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+            LOGGER.info(ex);
         } catch (NamingException ex) {
-            LOGGER.error(ex);
-            response.sendError(response.SC_INTERNAL_SERVER_ERROR);
-        } catch (NoSuchAlgorithmException ex) {
-            LOGGER.error(ex);
-            response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+            LOGGER.info(ex);
         } finally {
-            response.sendRedirect(url);
-            
+
         }
     }
 

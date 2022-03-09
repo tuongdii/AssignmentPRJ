@@ -11,8 +11,16 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Delete Confirm</title>
+        <link rel="stylesheet" type="text/css" href="navStyle">
     </head>
     <body>
+        <nav>
+            <label class="logo">Assignment PRJ</label>
+            <ul>
+                <li><a href="searchAccountAction">Back To Search Page</a></li>
+                <li><a href="logoutAction">Log out</a></li>
+            </ul>
+        </nav>
         <h1>Delete Account Confirm</h1>
         <h3>Do you want to delete "${param.username}" account?</h3>
         <c:url var="deleteUrl" value="deleteAccountAction">

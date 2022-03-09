@@ -8,17 +8,15 @@ package duyvtt.controller;
 import duyvtt.registration.RegistrationDAO;
 import duyvtt.registration.RegistrationDTO;
 import duyvtt.registration.RegistrationInsertError;
-import duyvtt.utils.MyApplicationConstants;
+import duyvtt.common.Constants;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Properties;
 import javax.naming.NamingException;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
 /**
@@ -26,8 +24,8 @@ import org.apache.log4j.Logger;
  * @author DELL
  */
 public class RegisterServlet extends HttpServlet {
+
     private final Logger LOGGER = Logger.getLogger(RegisterServlet.class);
-    
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -40,17 +38,16 @@ public class RegisterServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        request.setCharacterEncoding("utf-8");
         String username = request.getParameter("txtUsername");
         String password = request.getParameter("txtPassword");
         String confirm = request.getParameter("txtConfirm");
         String fullname = request.getParameter("txtFullname");
 
-
         RegistrationInsertError errors = new RegistrationInsertError();
         boolean foundErr = false;
-        String url = MyApplicationConstants.RegisterFeature.ERROR_PAGE;
+        String url = Constants.registerFeature.ERROR_PAGE;
+
+        HttpSession session = request.getSession();
 
         try {
             //1. Check all user errors
@@ -71,31 +68,32 @@ public class RegisterServlet extends HttpServlet {
             }
 
             if (foundErr) {
-                request.setAttribute("INSERT_ERRORS", errors);
+                session.setAttribute("INSERT_ERRORS", errors);
+                session.setAttribute("txtUsername", username);
+                session.setAttribute("txtFullname", fullname);
             } else {
                 //Insert to DB
                 RegistrationDTO dto = new RegistrationDTO(username, password, fullname, false);
                 RegistrationDAO dao = new RegistrationDAO();
                 boolean result = dao.insertAccount(dto);
                 if (result) {
-                    url = MyApplicationConstants.RegisterFeature.LOGIN_PAGE;
+                    url = Constants.registerFeature.LOGIN_PAGE;
                 }
             }
         } catch (SQLException ex) {
             String msg = ex.getMessage();
-            log("RegisterServlet _ SQL " + msg);
+            LOGGER.info(ex);
             if (msg.contains("duplicate")) {
                 errors.setUsernameIsExisted(username + " existed!!!");
-                request.setAttribute("INSERT_ERRORS", errors);
+                session.setAttribute("INSERT_ERRORS", errors);
+            } else {
+                response.sendError(response.SC_INTERNAL_SERVER_ERROR);
             }
         } catch (NamingException ex) {
-            log("RegisterServlet _ Maming " + ex.getMessage());
+            LOGGER.info(ex);
+            response.sendError(response.SC_INTERNAL_SERVER_ERROR);
         } finally {
-            ServletContext context = request.getServletContext();
-            Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");
-            url = siteMapProp.getProperty(url);
-            RequestDispatcher rq = request.getRequestDispatcher(url);
-            rq.forward(request, response);
+            response.sendRedirect(url);
         }
     }
 

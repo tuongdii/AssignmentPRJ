@@ -70,4 +70,18 @@ public class CartObject implements Serializable {
         }
         return 0;
     }
+    
+    public boolean updateItemQuantity(ProductDTO dto, int quantity) {
+        if (dto == null) {
+            return false;
+        }
+        if (this.items == null) {
+            return false;
+        }
+        if (this.items.containsKey(dto)) {
+            this.items.put(dto, quantity);
+            return true;
+        }
+        return false;
+    }
 }

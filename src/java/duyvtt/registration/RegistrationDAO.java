@@ -5,7 +5,7 @@
  */
 package duyvtt.registration;
 
-import duyvtt.utils.DBHelpers;
+import duyvtt.utils.DBUtils;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -29,7 +29,7 @@ public class RegistrationDAO implements Serializable {
 
         try {
             //1. Connect DB
-            con = DBHelpers.makeConnection();
+            con = DBUtils.makeConnection();
             //2. Create SQL Statement
             if (con != null) {
                 //3. Create Statement to set SQL
@@ -76,7 +76,7 @@ public class RegistrationDAO implements Serializable {
         ResultSet rs = null;
         try {
             //1. Connect DB
-            con = DBHelpers.makeConnection();
+            con = DBUtils.makeConnection();
             //2. Create SQL Statement
             if (con != null) {
                 //3. Create Statement to set SQL
@@ -124,7 +124,7 @@ public class RegistrationDAO implements Serializable {
 
         try {
             //1. Connect DB
-            con = DBHelpers.makeConnection();
+            con = DBUtils.makeConnection();
             //2. Create SQL Statement
             if (con != null) {
                 //3. Create Statement to set SQL
@@ -159,7 +159,7 @@ public class RegistrationDAO implements Serializable {
 
         try {
             //1. Connect DB
-            con = DBHelpers.makeConnection();
+            con = DBUtils.makeConnection();
             //2. Create SQL Statement
             if (con != null) {
                 //3. Create Statement to set SQL
@@ -199,7 +199,7 @@ public class RegistrationDAO implements Serializable {
         }//end dto is not existed
         try {
             //1. Connect DB
-            con = DBHelpers.makeConnection();
+            con = DBUtils.makeConnection();
             //2. Create SQL Statement
             if (con != null) {
                 //3. Create Statement to set SQL
@@ -235,7 +235,7 @@ public class RegistrationDAO implements Serializable {
         Connection con = null;
         PreparedStatement stm = null;
         try {
-            con = DBHelpers.makeConnection();
+            con = DBUtils.makeConnection();
             if (con != null) {
                 String sql = "UPDATE Registration "
                         + "SET password = ? "

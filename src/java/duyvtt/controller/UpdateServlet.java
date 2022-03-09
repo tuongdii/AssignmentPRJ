@@ -6,18 +6,16 @@
 package duyvtt.controller;
 
 import duyvtt.registration.RegistrationDAO;
-import duyvtt.registration.RegistrationInsertError;
-import duyvtt.utils.MyApplicationConstants;
+import duyvtt.common.Constants;
+import duyvtt.registration.RegistrationUpdateError;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Properties;
 import javax.naming.NamingException;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
 /**
@@ -27,7 +25,6 @@ import org.apache.log4j.Logger;
 public class UpdateServlet extends HttpServlet {
 
     private final Logger LOGGER = Logger.getLogger(UpdateServlet.class);
-    private final String SEARCH_LAST_NAME_SERVLET = "searchAccountAction";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -40,8 +37,6 @@ public class UpdateServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        request.setCharacterEncoding("utf-8");
 
         String username = request.getParameter("txtUsername");
         String lastname = request.getParameter("txtLastname");
@@ -50,11 +45,10 @@ public class UpdateServlet extends HttpServlet {
         if (checkAdmin != null) {
             isAdmin = true;
         }
-        ServletContext context = request.getServletContext();
-        Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");
-        String url = siteMapProp.getProperty(MyApplicationConstants.UpdateAccountFeature.SEARCH_LATS_NAME_SERVLET);
+        String url = Constants.updateAccountFeature.SEARCH_LATS_NAME_SERVLET;
 
-        RegistrationInsertError error = new RegistrationInsertError();
+        HttpSession session = request.getSession();
+        RegistrationUpdateError error = new RegistrationUpdateError();
         boolean foundError = false;
         try {
             if (lastname.trim().length() < 2 || lastname.trim().length() > 50) {
@@ -62,23 +56,22 @@ public class UpdateServlet extends HttpServlet {
                 error.setFullNameLengthErr("Last name is required form 2 to 50 chars");
             }
             if (foundError) {
-                request.setAttribute("UPDATE_ERRORS", error);
+                session.setAttribute("UPDATE_ERRORS", error);
             } else {
                 RegistrationDAO dao = new RegistrationDAO();
                 boolean result = dao.updateAccount(username, lastname, isAdmin);
                 if (result) {
-                    request.setAttribute("UPDATE_INFO", username + " account has been updated.");
+                    session.setAttribute("UPDATE_INFO", username + " account has been updated.");
                 }
             }
         } catch (SQLException e) {
             LOGGER.error(e);
-            response.sendError(500);
+            response.sendError(response.SC_INTERNAL_SERVER_ERROR);
         } catch (NamingException e) {
             LOGGER.error(e);
-            response.sendError(500);
+            response.sendError(response.SC_INTERNAL_SERVER_ERROR);
         } finally {
-            RequestDispatcher rd = request.getRequestDispatcher(url);
-            rd.forward(request, response);
+            response.sendRedirect(url);
 
         }
     }

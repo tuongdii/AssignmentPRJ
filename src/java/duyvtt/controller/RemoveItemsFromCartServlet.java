@@ -8,7 +8,7 @@ package duyvtt.controller;
 import duyvtt.cart.CartObject;
 import duyvtt.product.ProductDAO;
 import duyvtt.product.ProductDTO;
-import duyvtt.utils.MyApplicationConstants;
+import duyvtt.common.Constants;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
@@ -39,7 +39,6 @@ public class RemoveItemsFromCartServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
         boolean foundError = false;
         try {
             //1. Customer gose to his/her cart place
@@ -51,20 +50,15 @@ public class RemoveItemsFromCartServlet extends HttpServlet {
                     //2. Customer take items
                     Map<ProductDTO, Integer> item = cart.getItems();
                     if (item != null) {
-                        //4. get all selected Items
-                        String[] removedItems = request.getParameterValues("chkItem");
+                        //4. get selected Item
+                        String itemID = request.getParameter("txtItemId");
                         ProductDAO dao = new ProductDAO();
-                        if (removedItems != null) {
-                            //5. Remove each iteam from cart
-                            for (String items : removedItems) {
-                                cart.removeItemFromCart(dao.getProductByID(items));
-                            }
-                            session.setAttribute("CART", cart);
-                        }
+                        //remove this items
+                        cart.removeItemFromCart(dao.getProductByID(itemID));
+                        session.setAttribute("CART", cart);
                     }
                 }
             }
-
         } catch (SQLException ex) {
             LOGGER.info(ex);
             foundError = true;
@@ -73,15 +67,15 @@ public class RemoveItemsFromCartServlet extends HttpServlet {
             foundError = false;
         } finally {
             if (foundError) {
-                response.sendError(500);
+                response.sendError(response.SC_INTERNAL_SERVER_ERROR);
             } else {
                 //6. refresh = call view cart again
-                response.sendRedirect(MyApplicationConstants.RemoveItemFeature.VIEW_CART_PAGE);
+                response.sendRedirect(Constants.removeItemFeature.VIEW_CART_PAGE);
             }
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *

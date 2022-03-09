@@ -8,7 +8,7 @@ package duyvtt.cart;
 import duyvtt.orderDetail.OrderDetailDAO;
 import duyvtt.orderDetail.OrderDetailDTO;
 import duyvtt.orders.OrdersDAO;
-import duyvtt.utils.DBHelpers;
+import duyvtt.utils.DBUtils;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -20,10 +20,11 @@ import javax.naming.NamingException;
  */
 public class OrderService {
     public boolean checkoutService(String fullname, List<OrderDetailDTO> orderDetailList) 
-            throws SQLException, NamingException{
+            throws SQLException, NamingException 
+            {
         Connection con = null;
         try{
-            con = DBHelpers.makeConnection();
+            con = DBUtils.makeConnection();
             if (con != null){
                 //turn off auto commit
                 con.setAutoCommit(false);
@@ -47,6 +48,9 @@ public class OrderService {
                     con.rollback();
                 }
             }
+        }catch(SQLException ex){
+            con.rollback();
+            throw ex;
         }finally{
             if (con != null){
                 con.close();

@@ -7,7 +7,7 @@ package duyvtt.controller;
 
 import duyvtt.registration.RegistrationDAO;
 import duyvtt.registration.RegistrationDTO;
-import duyvtt.utils.MyApplicationConstants;
+import duyvtt.common.Constants;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
@@ -41,26 +41,21 @@ public class SearchLastnameServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        request.setCharacterEncoding("UTF-8");
         String searchValue = request.getParameter("txtSearchValue");
+        ServletContext context = request.getServletContext();
+        Properties prop = (Properties) context.getAttribute("SITE_MAP");
         //get session
         HttpSession session = request.getSession(false);
-        if (searchValue.isEmpty()) {
+        if (searchValue == null) {
             searchValue = (String) session.getAttribute("SEARCH_VALUE");
         }
-
-        //get context
-        ServletContext context = request.getServletContext();
-        Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");
-
         //get user to check role
-        String url = MyApplicationConstants.SearchLastnameFeature.SEARCH_PAGE_USER;
+        String url = Constants.searchLastnameFeature.SEARCH_PAGE_USER;
         RegistrationDTO user = (RegistrationDTO) session.getAttribute("USER");
         if (user.isRole() == true) {
-            url = MyApplicationConstants.SearchLastnameFeature.SEARCH_PAGE_ADMIN;
+            url = Constants.searchLastnameFeature.SEARCH_PAGE_ADMIN;
         }
-
+        session.setAttribute("SEARCH_VALUE", searchValue);
         try {
             if (!searchValue.trim().isEmpty()) {
                 //callDAO
@@ -72,18 +67,18 @@ public class SearchLastnameServlet extends HttpServlet {
                         result.remove(result.get(i));
                     }
                 }
-
                 request.setAttribute("SEARCH_RESULT", result);
-                session.setAttribute("SEARCH_VALUE", searchValue);
-
             }
+            
         } catch (NamingException ex) {
             LOGGER.error(ex);
+            response.sendError(response.SC_INTERNAL_SERVER_ERROR);
         } catch (SQLException ex) {
             LOGGER.error(ex);
+            response.sendError(response.SC_INTERNAL_SERVER_ERROR);
 
         } finally {
-            RequestDispatcher rd = request.getRequestDispatcher(siteMapProp.getProperty(url));
+            RequestDispatcher rd = request.getRequestDispatcher(prop.getProperty(url));
             rd.forward(request, response);
         }
     }

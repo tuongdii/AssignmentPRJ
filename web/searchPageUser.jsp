@@ -13,7 +13,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Search</title>
-        <link rel="stylesheet" type="text/css" href="navigationStyle.css">
+        <link rel="stylesheet" type="text/css" href="navStyle">
     </head>
     <body>
         <nav>

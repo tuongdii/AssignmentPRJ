@@ -13,7 +13,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Search</title>
-        <link rel="stylesheet" type="text/css" href="navigationStyle.css">
+        <link rel="stylesheet" type="text/css" href="navStyle">
     </head>
     <body>
         <nav>
@@ -93,21 +93,25 @@
         <c:if test="${empty result}">
             <h2>No record is matched!!</h2>
         </c:if>
-        <c:if test="${not empty requestScope.UPDATE_ERRORS}">
-            <font color="red">
-            ${requestScope.UPDATE_ERRORS.getFullNameLengthErr()}
-            </font>
+        <c:if test="${not empty sessionScope.UPDATE_ERRORS}">
+            <c:if test="${not empty sessionScope.UPDATE_ERRORS.fullNameLengthErr}">
+                <font color="red">
+                ${sessionScope.UPDATE_ERRORS.fullNameLengthErr}
+                </font>
+            </c:if>             
+            <c:remove var="UPDATE_ERRORS" scope="session"/>
         </c:if>  
         <c:if test="${not empty requestScope.DELETE_INFO}">
             <font color="red">
             ${requestScope.DELETE_INFO}
             </font>
         </c:if>  
-        <c:if test="${not empty requestScope.UPDATE_INFO}">
+        <c:if test="${not empty sessionScope.UPDATE_INFO}">
             <font color="red">
-            ${requestScope.UPDATE_INFO}
+            ${sessionScope.UPDATE_INFO}
             </font>
-        </c:if>      
+            <c:remove var="UPDATE_INFO" scope="session"/>
+        </c:if>     
     </c:if>
 
 </body>

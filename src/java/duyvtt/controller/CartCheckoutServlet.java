@@ -9,7 +9,8 @@ import duyvtt.cart.CartObject;
 import duyvtt.cart.OrderService;
 import duyvtt.orderDetail.OrderDetailDTO;
 import duyvtt.product.ProductDTO;
-import duyvtt.utils.MyApplicationConstants;
+import duyvtt.common.Constants;
+import duyvtt.orders.OrdersInsertError;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -46,61 +47,69 @@ public class CartCheckoutServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        request.setCharacterEncoding("UTF-8");
         String fullname = request.getParameter("txtFullname");
-        String url = MyApplicationConstants.CheckoutFeature.VIEW_CART;
-        try {
-            if (fullname.isEmpty()) {
-                request.setAttribute("CHECKOUT_ERROR", "Please enter full name.");
-                url = MyApplicationConstants.CheckoutFeature.CHECK_OUT;
-            } else {
-                if (fullname.trim().length() < 2 || fullname.trim().length() > 50) {
-                    request.setAttribute("CHECKOUT_ERROR", "Full name is required form 2 to 50 chars");
-                    url = MyApplicationConstants.CheckoutFeature.CHECK_OUT;
-                }
-            }
-            //1. staff goes to cart place
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                //2. staff take customer's cart
-                CartObject cart = (CartObject) session.getAttribute("CART");
-                if (cart != null) {
-                    //create OrderDetailDTO List
-                    List<OrderDetailDTO> orderDetailList = new ArrayList<>();
-                    Map<ProductDTO, Integer> items = cart.getItems();
-                    if (items != null) {
-                        for (ProductDTO item : items.keySet()) {
-                            String productId = item.getId();
-                            int quantity = items.get(item);
-                            BigDecimal price = item.getPrice();
-                            BigDecimal total = price.multiply(BigDecimal.valueOf(quantity));
-                            OrderDetailDTO dto = new OrderDetailDTO(productId, price, quantity, total);
+        String url = Constants.checkoutFeature.VIEW_CART;
 
-                            //add dto to orderdetail list
-                            orderDetailList.add(dto);
-                        }
-                        OrderService service = new OrderService();
-                        boolean result = service.checkoutService(fullname, orderDetailList);
-                        if (result) {
-                            url = MyApplicationConstants.CheckoutFeature.SHOP_PAGE;
-                            request.setAttribute("CHECKOUT_INFO", "Checkout successfully!!");
-                            session.removeAttribute("CART");
+        ServletContext context = request.getServletContext();
+        Properties prop = (Properties) context.getAttribute("SITE_MAP");
+
+        OrdersInsertError errors = new OrdersInsertError();
+        boolean foundError = false;
+        boolean foundServerError = false;
+        try {
+
+            if (fullname.trim().length() < 2 || fullname.trim().length() > 50) {
+                errors.setFullNameLengthErr("Full name is required form 2 to 50 chars");
+                foundError = true;
+            }
+            if (foundError) {
+                url = Constants.checkoutFeature.CHECK_OUT;
+                request.setAttribute("CHECKOUT_ERROR", errors);
+            } else {
+                //1. staff goes to cart place
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                    //2. staff take customer's cart
+                    CartObject cart = (CartObject) session.getAttribute("CART");
+                    if (cart != null) {
+                        //create OrderDetailDTO List
+                        List<OrderDetailDTO> orderDetailList = new ArrayList<>();
+                        Map<ProductDTO, Integer> items = cart.getItems();
+                        if (items != null) {
+                            for (ProductDTO item : items.keySet()) {
+                                String productId = item.getId();
+                                int quantity = items.get(item);
+                                BigDecimal price = item.getPrice();
+                                BigDecimal total = price.multiply(BigDecimal.valueOf(quantity));
+                                OrderDetailDTO dto = new OrderDetailDTO(productId, price, quantity, total);
+
+                                //add dto to orderdetail list
+                                orderDetailList.add(dto);
+                            }
+                            OrderService service = new OrderService();
+                            boolean result = service.checkoutService(fullname, orderDetailList);
+                            if (result) {
+                                url = Constants.checkoutFeature.SHOP_PAGE;
+                                request.setAttribute("CHECKOUT_INFO", "Checkout successfully!!");
+                                session.removeAttribute("CART");
+                            }
                         }
                     }
                 }
             }
         } catch (SQLException ex) {
             LOGGER.info(ex);
-            response.sendError(500);
+            foundServerError = true;
         } catch (NamingException ex) {
             LOGGER.info(ex);
-            response.sendError(500);
+            foundServerError = true;
         } finally {
-            ServletContext context = request.getServletContext();
-            Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");
-            RequestDispatcher rq = request.getRequestDispatcher(siteMapProp.getProperty(url));
-            rq.forward(request, response);
+            if (!foundServerError) {
+                RequestDispatcher rq = request.getRequestDispatcher(prop.getProperty(url));
+                rq.forward(request, response);
+            }else{
+                response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+            }
         }
     }
 

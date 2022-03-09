@@ -5,11 +5,15 @@
  */
 package duyvtt.listener;
 
-import duyvtt.utils.PropertiesFileHelper;
+import duyvtt.common.AttributeName;
+import duyvtt.common.Constants;
+import duyvtt.utils.PropertiesFileUtils;
+import java.io.IOException;
 import java.util.Properties;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 /**
@@ -18,10 +22,10 @@ import org.apache.log4j.PropertyConfigurator;
  * @author DELL
  */
 public class ContextListener implements ServletContextListener {
-
+    private final Logger LOGGER = Logger.getLogger(ContextListener.class);
     private void configLog4j(ServletContext context) {
         String log4jConfigFile 
-                = context.getInitParameter("LOG4J_PROPERTIES_FILE_LOCATION");
+                = context.getInitParameter(Constants.initParam.LOG4J);
         String fullPath
                 = context.getRealPath("/") + log4jConfigFile;
 
@@ -30,35 +34,51 @@ public class ContextListener implements ServletContextListener {
     }
 
     private void loadSiteMapsFile(ServletContext context) {
-        String siteMapLocation 
-                = context.getInitParameter("SITEMAPS_PROPERTIES_FILE_LOCATION");
-        Properties siteMapProperty
-                = PropertiesFileHelper.getProperties(context, siteMapLocation);
-        context.setAttribute("SITE_MAP", siteMapProperty);
+        try {
+            String siteMapLocation
+                    = context.getInitParameter(Constants.initParam.SITEMAPS);
+            Properties siteMapProperty
+                    = PropertiesFileUtils.getProperties(context, siteMapLocation);
+            context.setAttribute("SITE_MAP", siteMapProperty);
+        } catch (IOException ex) {
+            LOGGER.info(ex);
+        }
     }
 
     private void loadAuthenticationFile(ServletContext context) {
-        String authenticationLocation 
-                = context.getInitParameter("AUTHENTICATION_PROPERTIES_FILE_LOCATION");
-        Properties authenticationProperty
-                = PropertiesFileHelper.getProperties(context, authenticationLocation);
-        context.setAttribute("AUTHENTICATION_LIST", authenticationProperty);
+        try {
+            String authenticationLocation
+                    = context.getInitParameter(Constants.initParam.AUTHENTICATION);
+            Properties authenticationProperty
+                    = PropertiesFileUtils.getProperties(context, authenticationLocation);
+            context.setAttribute("AUTHENTICATION_LIST", authenticationProperty);
+        } catch (IOException ex) {
+            LOGGER.info(ex);
+        }
     }
 
     private void loadAdminAuthenticationFile(ServletContext context){
-        String adminAuthenticationLocation 
-                = context.getInitParameter("ADMIN_AUTHENTICATION_PROPERTIES_FILE_LOCATION");
-        Properties adminAuthenticationProperty 
-                = PropertiesFileHelper.getProperties(context, adminAuthenticationLocation);
-        context.setAttribute("ADMIN_AUTHENTICATION_LIST", adminAuthenticationProperty);              
+        try {
+            String adminAuthenticationLocation
+                    = context.getInitParameter(Constants.initParam.ADMIN_AUTHOR);
+            Properties adminAuthenticationProperty
+                    = PropertiesFileUtils.getProperties(context, adminAuthenticationLocation);              
+            context.setAttribute("ADMIN_AUTHENTICATION_LIST", adminAuthenticationProperty);
+        } catch (IOException ex) {
+            LOGGER.info(ex);
+        }
     }
     
     private void loadUserAuthenticationFile(ServletContext context){
-        String userAuthenticationLocation
-                = context.getInitParameter("USER_AUTHENTICATION_PROPERTIES_FILE_LOCATION");
-        Properties userAuthenticationProperty
-                = PropertiesFileHelper.getProperties(context, userAuthenticationLocation);
-        context.setAttribute("USER_AUTHENTICATION_LIST", userAuthenticationProperty);
+        try {
+            String userAuthenticationLocation
+                    = context.getInitParameter(Constants.initParam.USER_AUTHOR);
+            Properties userAuthenticationProperty
+                    = PropertiesFileUtils.getProperties(context, userAuthenticationLocation);
+            context.setAttribute("USER_AUTHENTICATION_LIST", userAuthenticationProperty);
+        } catch (IOException ex) {
+            LOGGER.info(ex);
+        }
     }
     @Override
     public void contextInitialized(ServletContextEvent sce) {
