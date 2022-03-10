@@ -44,20 +44,25 @@ public class LoadProductServlet extends HttpServlet {
         String url = Constants.loadProductFeature.SHOPPING_PAGE;
         ServletContext context = request.getServletContext();
         Properties prop = (Properties) context.getAttribute("SITE_MAP");
+        boolean foundError = false;
         try {
             ProductDAO dao = new ProductDAO();
             List<ProductDTO> listProduct = new ArrayList<ProductDTO>();
             listProduct = dao.getProductList();
             request.setAttribute("LIST_PRODUCT", listProduct);
         } catch (SQLException ex) {
-            LOGGER.info(ex);
-           response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+            LOGGER.error(ex);
+            foundError = true;
         } catch (NamingException ex) {
-            LOGGER.info(ex);
-            response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+            LOGGER.error(ex);
+            foundError = true;
         } finally {
-            RequestDispatcher rd = request.getRequestDispatcher(prop.getProperty(url));
-            rd.forward(request, response);
+            if (!foundError) {
+                RequestDispatcher rd = request.getRequestDispatcher(prop.getProperty(url));
+                rd.forward(request, response);
+            } else {
+                response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+            }
         }
     }
 

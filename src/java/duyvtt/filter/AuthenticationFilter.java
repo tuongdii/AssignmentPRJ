@@ -58,9 +58,9 @@ public class AuthenticationFilter implements Filter {
                 chain.doFilter(request, response);
             }
         } catch (IOException ex) {
-            LOGGER.info(ex);
+            LOGGER.error(ex);
         } catch (ServletException ex) {
-            LOGGER.info(ex);
+            LOGGER.error(ex);
         }
 
     }

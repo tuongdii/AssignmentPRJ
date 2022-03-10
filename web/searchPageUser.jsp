@@ -29,9 +29,6 @@
         </c:if>
         </font>
         <h1>Search Page</h1>
-        <form action="logoutAction">
-            <input type="submit" value="Logout" name="btAction" />
-        </form>
         <form action="searchAccountAction">
             Search Value <input type="text" name="txtSearchValue" 
                                 value="${param.txtSearchValue}" />
@@ -75,14 +72,10 @@
                                     </c:if>
 
                                 </td>
-
                             </tr> 
-
                         </c:forEach>
-
                     </tbody>
                 </table>
-
             </c:if>
             <c:if test="${empty result}">
                 <h2>No record is matched!!</h2>

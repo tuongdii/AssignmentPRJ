@@ -76,7 +76,7 @@
                     <input type="submit" value="Checkout" name="btAction" />
                     <a href="viewCart"><button>Cancel</button></a><br>
                 </form>
-                <c:if test="${not empty requestScope.CHECKOUT_ERROR}">
+                <c:if test="${not empty requestScope.CHECKOUT_ERROR.fullNameLengthErr}">
                     <font color="red">
                     ${requestScope.CHECKOUT_ERROR.fullNameLengthErr}
                     </font>

@@ -40,11 +40,10 @@ public class LoginServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         String username = request.getParameter("txtUsername");
         String password = request.getParameter("txtPassword");
         String url = Constants.loginFeature.INVALID_PAGE;
-
+        boolean foundError = false;
         try {
             String hashedPassword = SecurityUtils.hashString(password);
             //call DAO -> new DAO object & call method of DAO
@@ -69,15 +68,18 @@ public class LoginServlet extends HttpServlet {
             }
         } catch (SQLException ex) {
             LOGGER.error(ex);
-            response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+            foundError = true;
         } catch (NamingException ex) {
             LOGGER.error(ex);
-            response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+            foundError = true;
         } catch (NoSuchAlgorithmException ex) {
             LOGGER.error(ex);
-            response.sendError(response.SC_INTERNAL_SERVER_ERROR);
         } finally {
-            response.sendRedirect(url);
+            if (foundError) {
+                response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+            } else {
+                response.sendRedirect(url);
+            }
 
         }
     }

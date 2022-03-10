@@ -67,10 +67,10 @@ public class AddItemToCartServlet extends HttpServlet {
             session.setAttribute("CART", cart);
 
         } catch (SQLException ex) {
-            LOGGER.info(ex);
+            LOGGER.error(ex);
             foundError = true;
         } catch (NamingException ex) {
-            LOGGER.info(ex);
+            LOGGER.error(ex);
             foundError = true;
         } finally {
             if (foundError) {

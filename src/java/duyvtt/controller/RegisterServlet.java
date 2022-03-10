@@ -45,6 +45,7 @@ public class RegisterServlet extends HttpServlet {
 
         RegistrationInsertError errors = new RegistrationInsertError();
         boolean foundErr = false;
+        boolean foundServerError = false;
         String url = Constants.registerFeature.ERROR_PAGE;
 
         HttpSession session = request.getSession();
@@ -82,18 +83,23 @@ public class RegisterServlet extends HttpServlet {
             }
         } catch (SQLException ex) {
             String msg = ex.getMessage();
-            LOGGER.info(ex);
+            LOGGER.error(ex);
             if (msg.contains("duplicate")) {
                 errors.setUsernameIsExisted(username + " existed!!!");
                 session.setAttribute("INSERT_ERRORS", errors);
-            } else {
-                response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+            }else{
+                foundServerError = true;
             }
         } catch (NamingException ex) {
-            LOGGER.info(ex);
-            response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+            LOGGER.error(ex);
+            foundServerError = true;
         } finally {
-            response.sendRedirect(url);
+            if (!foundServerError) {
+                response.sendRedirect(url);
+            }else{
+                response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+            }
+            
         }
     }
 

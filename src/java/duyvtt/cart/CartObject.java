@@ -5,10 +5,13 @@
  */
 package duyvtt.cart;
 
+import duyvtt.product.ProductDAO;
 import duyvtt.product.ProductDTO;
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import javax.naming.NamingException;
 
 /**
  *
@@ -83,5 +86,17 @@ public class CartObject implements Serializable {
             return true;
         }
         return false;
+    }
+    
+    public boolean checkEnoughProductsQuantity() 
+            throws SQLException, NamingException, NotEnoughQuantityException{
+        ProductDAO dao = new ProductDAO();
+        for (ProductDTO item : items.keySet()) {
+            ProductDTO dto = dao.getProductByID(item.getId());
+            if(dto.getQuantity() < item.getQuantity()){
+                throw new NotEnoughQuantityException(item.getName());
+            }
+        }
+        return true;
     }
 }

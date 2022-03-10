@@ -68,6 +68,8 @@ public class Constants {
     }
     
     public class updateItemFeature{
+        public static final String CONFIRM_REMOVE = "removeItemsConfirm";
+        public static final String VIEW_CART = "viewCart"; 
     }
     public class checkoutFeature {
 

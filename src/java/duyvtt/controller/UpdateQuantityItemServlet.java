@@ -6,12 +6,17 @@
 package duyvtt.controller;
 
 import duyvtt.cart.CartObject;
+import duyvtt.cart.CartUpdateQuantityError;
+import duyvtt.common.Constants;
 import duyvtt.product.ProductDAO;
 import duyvtt.product.ProductDTO;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Properties;
 import javax.naming.NamingException;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +31,6 @@ import org.apache.log4j.Logger;
 public class UpdateQuantityItemServlet extends HttpServlet {
 
     private final Logger LOGGER = Logger.getLogger(UpdateQuantityItemServlet.class);
-
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -40,38 +44,54 @@ public class UpdateQuantityItemServlet extends HttpServlet {
             throws ServletException, IOException {
         String itemId = request.getParameter("txtId");
         String quantityParam = request.getParameter("txtQuantity");
+        ServletContext context = request.getServletContext();
+        Properties prop = (Properties) context.getAttribute("SITE_MAP");
+        CartUpdateQuantityError errors = new CartUpdateQuantityError();
+        String url = Constants.updateItemFeature.VIEW_CART;
         try {
+            ProductDAO dao = new ProductDAO();
+            ProductDTO dto = dao.getProductByID(itemId);
             if (quantityParam.isEmpty()) {
-
+                url = Constants.updateItemFeature.CONFIRM_REMOVE;
+                request.setAttribute("ITEM_REMOVE", dto);
             } else {
                 int quantity = Integer.parseInt(quantityParam);
-                if (quantity > 0) {
-                    //1. Customer gose to his/her cart place
+                if (quantity == 0) {
+                    url = Constants.updateItemFeature.CONFIRM_REMOVE;
+                    request.setAttribute("ITEM_REMOVE", dto);
+                } else if (quantity < 0) {
+                    errors.setQuantityInvalid("The quantity must be a non-negative number.");
+                    request.setAttribute("UPDATE_ITEM_ERRORS", errors);
+                } else if (quantity > 0) {
                     HttpSession session = request.getSession(false);
                     if (session != null) {
-                        //2. Customer take cart
                         CartObject cart = (CartObject) session.getAttribute("CART");
-                        if (cart != null) {
-                            //2. Customer take items
-                            Map<ProductDTO, Integer> item = cart.getItems();
-                            if (item != null) {
-                                ProductDAO dao = new ProductDAO();
-                                //remove this items
-                                cart.updateItemQuantity(dao.getProductByID(itemId), quantity);
-                                session.setAttribute("CART", cart);
+                        if (cart != null){
+                            if(dto.getQuantity() >= quantity){
+                                boolean result = cart.updateItemQuantity(dto, quantity);
+                                if (result) {
+                                    request.setAttribute("UPDATE_ITEM_INFO", 
+                                            "The quanity of products "+ dto.getName() +" has been updated.");
+                                }
+                            }else{
+                                errors.setNotEnoughQuantity("Not enough quantity of product " + dto.getName()
+                                        + ". Please return to the shop page to track the available quantity.");
+                                 request.setAttribute("UPDATE_ITEM_ERRORS", errors);
                             }
                         }
                     }
                 }
             }
         } catch (NumberFormatException ex) {
-            LOGGER.info(ex);
+            errors.setQuantityInvalid("Invalid quantity.");
+            request.setAttribute("UPDATE_ITEM_ERRORS", errors);
         } catch (SQLException ex) {
-            LOGGER.info(ex);
+            LOGGER.error(ex);
         } catch (NamingException ex) {
-            LOGGER.info(ex);
+            LOGGER.error(ex);
         } finally {
-
+            RequestDispatcher rd = request.getRequestDispatcher(prop.getProperty(url));
+            rd.forward(request, response);
         }
     }
 

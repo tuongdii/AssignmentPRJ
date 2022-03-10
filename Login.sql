@@ -96,3 +96,5 @@ VALUES
 ('BOOK007', 'Tomcat', 150, 'Tomcat fundamentel book', 10),
 ('BOOK008', 'JSTL', 75, 'JSTL fundamentel book', 10)
 GO
+
+select * F

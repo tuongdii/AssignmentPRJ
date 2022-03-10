@@ -50,6 +50,7 @@ public class UpdateServlet extends HttpServlet {
         HttpSession session = request.getSession();
         RegistrationUpdateError error = new RegistrationUpdateError();
         boolean foundError = false;
+        boolean foundServerError = false;
         try {
             if (lastname.trim().length() < 2 || lastname.trim().length() > 50) {
                 foundError = true;
@@ -66,10 +67,10 @@ public class UpdateServlet extends HttpServlet {
             }
         } catch (SQLException e) {
             LOGGER.error(e);
-            response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+            foundServerError = true;
         } catch (NamingException e) {
             LOGGER.error(e);
-            response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+            foundServerError = true;
         } finally {
             response.sendRedirect(url);
 

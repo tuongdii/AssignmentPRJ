@@ -60,10 +60,10 @@ public class RemoveItemsFromCartServlet extends HttpServlet {
                 }
             }
         } catch (SQLException ex) {
-            LOGGER.info(ex);
+            LOGGER.error(ex);
             foundError = true;
         } catch (NamingException ex) {
-            LOGGER.info(ex);
+            LOGGER.error(ex);
             foundError = false;
         } finally {
             if (foundError) {

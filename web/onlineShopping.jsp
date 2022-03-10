@@ -20,10 +20,10 @@
             <ul>
                 <c:if test="${not empty sessionScope.USER}">
                     <li><a href="home">Back To Home Page</a></li>
-                </c:if>
-                <c:if test="${empty sessionScope.USER}">
+                    </c:if>
+                    <c:if test="${empty sessionScope.USER}">
                     <li><a href="login">Login</a></li>
-                </c:if>
+                    </c:if>
             </ul>
         </nav>
         <h1>Online Shopping Page</h1>
@@ -49,7 +49,7 @@
                     </thead>
                     <tbody>
                         <c:forEach var="product" items="${products}" varStatus="counter">
-                            <c:if test="${product.quantity > 0}">
+                            <c:if test="${product.quantity - cart.getItemQuantity(product) > 0 }">                                
                                 <tr>
                                     <td>
                                         ${counter.count}
@@ -82,6 +82,7 @@
                                     </td>
                                 </tr>
                             </c:if>
+
                         </c:forEach>
                         <tr>
                             <th colspan="5">
@@ -96,7 +97,7 @@
             </form>
             <c:if test="${not empty requestScope.ADD_ERROR}">
                 <font color="red">
-                    ${requestScope.ADD_ERROR}
+                ${requestScope.ADD_ERROR}
                 </font>
             </c:if>
         </c:if>  

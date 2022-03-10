@@ -74,10 +74,6 @@ public class ProductDTO implements Serializable{
     public int hashCode() {
         int hash = 7;
         hash = 97 * hash + Objects.hashCode(this.id);
-        hash = 97 * hash + Objects.hashCode(this.name);
-        hash = 97 * hash + Objects.hashCode(this.price);
-        hash = 97 * hash + Objects.hashCode(this.description);
-        hash = 97 * hash + this.quantity;
         return hash;
     }
 
@@ -92,8 +88,7 @@ public class ProductDTO implements Serializable{
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final ProductDTO other = (ProductDTO) obj;
-        return true;
+        return this.id.equals(((ProductDTO) obj).id);
     }
     
 }

@@ -6,6 +6,7 @@
 package duyvtt.controller;
 
 import duyvtt.cart.CartObject;
+import duyvtt.cart.NotEnoughQuantityException;
 import duyvtt.cart.OrderService;
 import duyvtt.orderDetail.OrderDetailDTO;
 import duyvtt.product.ProductDTO;
@@ -72,42 +73,50 @@ public class CartCheckoutServlet extends HttpServlet {
                     //2. staff take customer's cart
                     CartObject cart = (CartObject) session.getAttribute("CART");
                     if (cart != null) {
-                        //create OrderDetailDTO List
-                        List<OrderDetailDTO> orderDetailList = new ArrayList<>();
-                        Map<ProductDTO, Integer> items = cart.getItems();
-                        if (items != null) {
-                            for (ProductDTO item : items.keySet()) {
-                                String productId = item.getId();
-                                int quantity = items.get(item);
-                                BigDecimal price = item.getPrice();
-                                BigDecimal total = price.multiply(BigDecimal.valueOf(quantity));
-                                OrderDetailDTO dto = new OrderDetailDTO(productId, price, quantity, total);
+                        if (cart.checkEnoughProductsQuantity()) {
+                            //create OrderDetailDTO List
+                            List<OrderDetailDTO> orderDetailList = new ArrayList<>();
+                            Map<ProductDTO, Integer> items = cart.getItems();
+                            if (items != null) {
+                                for (ProductDTO item : items.keySet()) {
+                                    String productId = item.getId();
+                                    int quantity = items.get(item);
+                                    BigDecimal price = item.getPrice();
+                                    BigDecimal total = price.multiply(BigDecimal.valueOf(quantity));
+                                    OrderDetailDTO dto = new OrderDetailDTO(productId, price, quantity, total);
 
-                                //add dto to orderdetail list
-                                orderDetailList.add(dto);
-                            }
-                            OrderService service = new OrderService();
-                            boolean result = service.checkoutService(fullname, orderDetailList);
-                            if (result) {
-                                url = Constants.checkoutFeature.SHOP_PAGE;
-                                request.setAttribute("CHECKOUT_INFO", "Checkout successfully!!");
-                                session.removeAttribute("CART");
+                                    //add dto to orderdetail list
+                                    orderDetailList.add(dto);
+                                }
+                                OrderService service = new OrderService();
+                                boolean result = service.checkoutService(fullname, orderDetailList);
+                                if (result) {
+                                    url = Constants.checkoutFeature.SHOP_PAGE;
+                                    request.setAttribute("CHECKOUT_INFO", "Checkout successfully!!");
+                                    session.removeAttribute("CART");
+                                }
                             }
                         }
                     }
                 }
             }
         } catch (SQLException ex) {
-            LOGGER.info(ex);
+            LOGGER.error(ex);
             foundServerError = true;
         } catch (NamingException ex) {
-            LOGGER.info(ex);
+            LOGGER.error(ex);
             foundServerError = true;
+        } catch (NotEnoughQuantityException ex) {
+            LOGGER.error(ex);
+            url = Constants.checkoutFeature.VIEW_CART;
+            errors.setNotEnoughQuantityErr( "Not enough " + ex.getMessage() + ". "
+                    + "Please go to the shop page and check this product quantity!");
+            request.setAttribute("CHECKOUT_ERROR", errors);
         } finally {
             if (!foundServerError) {
                 RequestDispatcher rq = request.getRequestDispatcher(prop.getProperty(url));
                 rq.forward(request, response);
-            }else{
+            } else {
                 response.sendError(response.SC_INTERNAL_SERVER_ERROR);
             }
         }

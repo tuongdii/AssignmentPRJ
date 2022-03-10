@@ -21,9 +21,17 @@
             </ul>
         </nav>
         <h1>Remove Item Confirm</h1>
-        <h3>Do you want to remove "${param.txtItem}" from your cart?</h3>
+        <c:if test="${not empty requestScope.ITEM_REMOVE}">
+            <c:set var="name" value="${requestScope.ITEM_REMOVE.name}"/>
+            <c:set var="id" value="${requestScope.ITEM_REMOVE.id}"/>
+        </c:if>
+        <c:if test="${empty requestScope.ITEM_REMOVE}">
+            <c:set var="name" value="${param.txtItem}"/>
+            <c:set var="id" value="${param.txtItemId}"/>
+        </c:if>
+        <h3>Do you want to remove "${name}" from your cart?</h3>
         <c:url var="removeUrl" value="removeItems">
-            <c:param name="txtItemId" value="${param.txtItemId}"/>
+            <c:param name="txtItemId" value="${id}"/>
         </c:url>
         <a href="${removeUrl}"><button type="button">Yes</button></a>
         <a href="viewCart"><button type="button">No</button></a>

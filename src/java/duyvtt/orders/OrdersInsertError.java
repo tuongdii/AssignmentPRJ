@@ -13,6 +13,7 @@ import java.io.Serializable;
  */
 public class OrdersInsertError implements Serializable{
     private String fullNameLengthErr;
+    private String notEnoughQuantityErr;
 
     public OrdersInsertError() {
     }
@@ -30,5 +31,21 @@ public class OrdersInsertError implements Serializable{
     public void setFullNameLengthErr(String fullNameLengthErr) {
         this.fullNameLengthErr = fullNameLengthErr;
     }
+
+    /**
+     * @return the notEnoughQuantityErr
+     */
+    public String getNotEnoughQuantityErr() {
+        return notEnoughQuantityErr;
+    }
+
+    /**
+     * @param notEnoughQuantityErr the notEnoughQuantityErr to set
+     */
+    public void setNotEnoughQuantityErr(String notEnoughQuantityErr) {
+        this.notEnoughQuantityErr = notEnoughQuantityErr;
+    }
+    
+    
     
 }

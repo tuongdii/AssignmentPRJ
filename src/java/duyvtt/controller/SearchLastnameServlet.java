@@ -55,6 +55,7 @@ public class SearchLastnameServlet extends HttpServlet {
         if (user.isRole() == true) {
             url = Constants.searchLastnameFeature.SEARCH_PAGE_ADMIN;
         }
+        boolean foundError = false;
         session.setAttribute("SEARCH_VALUE", searchValue);
         try {
             if (!searchValue.trim().isEmpty()) {
@@ -62,24 +63,30 @@ public class SearchLastnameServlet extends HttpServlet {
                 RegistrationDAO dao = new RegistrationDAO();
                 dao.searchLastname(searchValue);
                 List<RegistrationDTO> result = dao.getAccounts();
-                for (int i = 0; i < result.size(); i++) {
-                    if (result.get(i).getUsername().equals(user.getUsername())) {
-                        result.remove(result.get(i));
+                if (result != null) {
+                    for (int i = 0; i < result.size(); i++) {
+                        if (result.get(i).getUsername().equals(user.getUsername())) {
+                            result.remove(result.get(i));
+                        }
                     }
                 }
                 request.setAttribute("SEARCH_RESULT", result);
             }
-            
+
         } catch (NamingException ex) {
             LOGGER.error(ex);
-            response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+            foundError = true;
         } catch (SQLException ex) {
             LOGGER.error(ex);
-            response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+            foundError = true;
 
         } finally {
-            RequestDispatcher rd = request.getRequestDispatcher(prop.getProperty(url));
-            rd.forward(request, response);
+            if (foundError) {
+                response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+            } else {
+                RequestDispatcher rd = request.getRequestDispatcher(prop.getProperty(url));
+                rd.forward(request, response);
+            }
         }
     }
 

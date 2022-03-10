@@ -41,6 +41,7 @@ public class AutoLoginServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String url = Constants.autoLoginFeature.LOGIN_PAGE;
+        boolean foundError = false;
         try {
             //1. Get Coolies form request
             Cookie[] cookies = request.getCookies();
@@ -68,16 +69,19 @@ public class AutoLoginServlet extends HttpServlet {
             }//end cookies is existes
         } catch (SQLException ex) {
             LOGGER.error(ex);
-            response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+            foundError = true;
         } catch (NamingException ex) {
             LOGGER.error(ex);
-            response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+            foundError = true;
         } catch (NoSuchAlgorithmException ex) {
             LOGGER.error(ex);
-            response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+            foundError = true;
         } finally {
-            response.sendRedirect(url);
-            
+            if (!foundError) {
+                response.sendRedirect(url);
+            } else {
+                response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+            }
         }
     }
 
