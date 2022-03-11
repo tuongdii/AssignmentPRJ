@@ -57,6 +57,7 @@ public final class Constants {
         }
         
         public static final String SEARCH_LATS_NAME_SERVLET = "searchAccountAction";
+        public static final String PROFILE_PAGE = "profilePage";
     }
 
     public static final class AddItemToCartFeature {

@@ -7,6 +7,7 @@ package duyvtt.controller;
 
 import duyvtt.registration.RegistrationDAO;
 import duyvtt.common.Constants;
+import duyvtt.registration.RegistrationDTO;
 import duyvtt.registration.RegistrationUpdateError;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -41,15 +42,18 @@ public class AccountUpdateServlet extends HttpServlet {
         String username = request.getParameter("txtUsername");
         String lastname = request.getParameter("txtLastname");
         String checkAdmin = request.getParameter("chkAdmin");
-        boolean isAdmin = false;
         
+        boolean isAdmin = false;
+
         if (checkAdmin != null) {
             isAdmin = true;
         }
-        
+
         String url = Constants.UpdateAccountFeature.SEARCH_LATS_NAME_SERVLET;
 
         HttpSession session = request.getSession();
+        RegistrationDTO currentAccount = (RegistrationDTO) session.getAttribute("USER");
+        
         RegistrationUpdateError error = new RegistrationUpdateError();
         
         boolean foundError = false;
@@ -61,17 +65,26 @@ public class AccountUpdateServlet extends HttpServlet {
             }
             if (foundError) {
                 session.setAttribute("UPDATE_ERRORS", error);
+                if (currentAccount.getUsername().equals(username)) {
+                    url = Constants.UpdateAccountFeature.PROFILE_PAGE;
+                }
             } else {
                 RegistrationDAO dao = new RegistrationDAO();
                 boolean result = dao.updateAccount(username, lastname, isAdmin);
                 if (result) {
                     session.setAttribute("UPDATE_INFO", username + " account has been updated.");
+
+                    //set attribute for current account if it has been updated
+                    if (currentAccount != null) {
+                        if (currentAccount.getUsername().equals(username)) {
+                            url = Constants.UpdateAccountFeature.PROFILE_PAGE;
+                            RegistrationDTO updatedCurrentAcc = dao.getAccountByUsername(username);
+                            session.setAttribute("USER", updatedCurrentAcc);
+                        }
+                    }
                 }
             }
-        } catch (SQLException e) {
-            LOGGER.error(e);
-            foundServerError = true;
-        } catch (NamingException e) {
+        } catch (SQLException | NamingException e) {
             LOGGER.error(e);
             foundServerError = true;
         } finally {

@@ -20,6 +20,9 @@
             <label class="logo">Assignment PRJ</label>
             <ul>
                 <li><a href="shop">Shopping</a></li>
+                    <c:if test="${not empty sessionScope.USER}">
+                    <li><a href="profilePage">Profile</a></li>
+                    </c:if>
                 <li><a href="logoutAction">Log out</a></li>
             </ul>
         </nav>
@@ -55,7 +58,7 @@
                         <c:forEach var="dto" items="${result}" varStatus="counter">
                         <form action="updateAccountAction" method="POST">
                             <tr>
-                                <td>
+                                <td align="right">
                                     ${counter.count}
                                 </td>
                                 <td>
@@ -92,27 +95,26 @@
         </c:if>
         <c:if test="${empty result}">
             <h2>No record is matched!!</h2>
-        </c:if>
-        <c:if test="${not empty sessionScope.UPDATE_ERRORS}">
-            <c:if test="${not empty sessionScope.UPDATE_ERRORS.fullNameLengthErr}">
-                <font color="red">
-                ${sessionScope.UPDATE_ERRORS.fullNameLengthErr}
-                </font>
-            </c:if>             
-            <c:remove var="UPDATE_ERRORS" scope="session"/>
-        </c:if>  
-        <c:if test="${not empty requestScope.DELETE_INFO}">
-            <font color="red">
-            ${requestScope.DELETE_INFO}
-            </font>
-        </c:if>  
-        <c:if test="${not empty sessionScope.UPDATE_INFO}">
-            <font color="red">
-            ${sessionScope.UPDATE_INFO}
-            </font>
-            <c:remove var="UPDATE_INFO" scope="session"/>
         </c:if>     
     </c:if>
-
+    <c:if test="${not empty sessionScope.UPDATE_ERRORS}">
+        <c:if test="${not empty sessionScope.UPDATE_ERRORS.fullNameLengthErr}">
+            <font color="red">
+            ${sessionScope.UPDATE_ERRORS.fullNameLengthErr}
+            </font>
+        </c:if>             
+        <c:remove var="UPDATE_ERRORS" scope="session"/>
+    </c:if>  
+    <c:if test="${not empty requestScope.DELETE_INFO}">
+        <font color="red">
+        ${requestScope.DELETE_INFO}
+        </font>
+    </c:if>  
+    <c:if test="${not empty sessionScope.UPDATE_INFO}">
+        <font color="red">
+        ${sessionScope.UPDATE_INFO}
+        </font>
+        <c:remove var="UPDATE_INFO" scope="session"/>
+    </c:if>
 </body>
 </html>

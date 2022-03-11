@@ -20,6 +20,9 @@
             <label class="logo">Assignment PRJ</label>
             <ul>
                 <li><a href="shop">Shopping</a></li>
+                    <c:if test="${not empty sessionScope.USER}">
+                    <li><a href="profilePage">Profile</a></li>
+                    </c:if>
                 <li><a href="logoutAction">Log out</a></li>
             </ul>
         </nav>
@@ -52,7 +55,7 @@
                         <c:forEach var="dto" items="${result}" varStatus="counter">
 
                             <tr>
-                                <td>
+                                <td align="right">
                                     ${counter.count}
                                 </td>
                                 <td>
@@ -81,6 +84,5 @@
                 <h2>No record is matched!!</h2>
             </c:if>
         </c:if>
-
     </body>
 </html>

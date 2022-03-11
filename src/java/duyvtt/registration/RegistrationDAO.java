@@ -229,26 +229,40 @@ public class RegistrationDAO implements Serializable {
         }
         return false;
     }
-
-    public boolean changePassword(String username, String newPassword)
+    
+        public RegistrationDTO getAccountByUsername(String username)
             throws SQLException, NamingException {
         Connection con = null;
         PreparedStatement stm = null;
+        ResultSet rs = null;
+
         try {
+            //1. Connect DB
             con = DBUtils.makeConnection();
+            //2. Create SQL Statement
             if (con != null) {
-                String sql = "UPDATE Registration "
-                        + "SET password = ? "
-                        + "WHERE username = ?";
+                //3. Create Statement to set SQL
+                String sql = "Select username, lastname, isAdmin, password "
+                        + "From Registration "
+                        + "Where username = ?";
                 stm = con.prepareStatement(sql);
-                stm.setString(1, newPassword);
-                stm.setString(2, username);
-                int row = stm.executeUpdate();
-                if (row > 0) {
-                    return true;
+                stm.setString(1, username);
+                //4. Execute Query              
+                rs = stm.executeQuery();
+                //5. Process
+                if (rs.next()) {
+                    String lastname = rs.getNString("lastname");
+                    String password = rs.getString("password");
+                    boolean role = rs.getBoolean("isAdmin");
+                    RegistrationDTO dto = new RegistrationDTO(username, password, lastname, role);
+                    return dto;
                 }
             }
+
         } finally {
+            if (rs != null) {
+                rs.close();
+            }
             if (stm != null) {
                 stm.close();
             }
@@ -256,7 +270,6 @@ public class RegistrationDAO implements Serializable {
                 con.close();
             }
         }
-        return false;
-
+        return null;
     }
 }

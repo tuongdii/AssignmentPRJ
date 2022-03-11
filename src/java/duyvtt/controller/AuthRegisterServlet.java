@@ -9,7 +9,9 @@ import duyvtt.registration.RegistrationDAO;
 import duyvtt.registration.RegistrationDTO;
 import duyvtt.registration.RegistrationInsertError;
 import duyvtt.common.Constants;
+import duyvtt.utils.SecurityUtils;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
@@ -73,8 +75,10 @@ public class AuthRegisterServlet extends HttpServlet {
                 session.setAttribute("txtUsername", username);
                 session.setAttribute("txtFullname", fullname);
             } else {
+                //hash password
+                String hashedPassword = SecurityUtils.hashString(password);
                 //Insert to DB
-                RegistrationDTO dto = new RegistrationDTO(username, password, fullname, false);
+                RegistrationDTO dto = new RegistrationDTO(username, hashedPassword, fullname, false);
                 RegistrationDAO dao = new RegistrationDAO();
                 boolean result = dao.insertAccount(dto);
                 if (result) {
@@ -85,12 +89,14 @@ public class AuthRegisterServlet extends HttpServlet {
             String msg = ex.getMessage();
             LOGGER.error(ex);
             if (msg.contains("duplicate")) {
+                session.setAttribute("txtUsername", username);
+                session.setAttribute("txtFullname", fullname);
                 errors.setUsernameIsExisted(username + " existed!!!");
                 session.setAttribute("INSERT_ERRORS", errors);
             }else{
                 foundServerError = true;
             }
-        } catch (NamingException ex) {
+        } catch (NamingException | NoSuchAlgorithmException ex) {
             LOGGER.error(ex);
             foundServerError = true;
         } finally {

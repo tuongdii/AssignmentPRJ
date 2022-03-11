@@ -51,23 +51,23 @@
                         <c:forEach var="product" items="${products}" varStatus="counter">
                             <c:if test="${product.quantity - cart.getItemQuantity(product) > 0 }">                                
                                 <tr>
-                                    <td>
+                                    <td align="right">
                                         ${counter.count}
                                     </td>
                                     <td>
                                         ${product.name}
                                     </td>
-                                    <td>
+                                    <td align="right">
                                         <fmt:formatNumber type = "currency" value="${product.price}" maxFractionDigits="2" />                       
                                     </td>
                                     <td>
                                         ${product.description}
                                     </td>
-                                    <td>
+                                    <td align="right"> 
                                         <c:set var="currentQuantity" value="${product.quantity - cart.getItemQuantity(product)}"/>
                                         ${currentQuantity}
                                     </td>
-                                    <td>
+                                    <td align="center">
                                         <input type="checkbox" name="chkProduct" value="${product.id}" 
                                                <c:if test="${currentQuantity <= 0}">
                                                    disabled="disabled"
