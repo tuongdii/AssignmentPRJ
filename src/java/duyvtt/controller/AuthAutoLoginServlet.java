@@ -5,20 +5,30 @@
  */
 package duyvtt.controller;
 
+import duyvtt.registration.RegistrationDAO;
+import duyvtt.registration.RegistrationDTO;
 import duyvtt.common.Constants;
+import duyvtt.utils.SecurityUtils;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author DELL
  */
-public class LogoutServlet extends HttpServlet {
+public class AuthAutoLoginServlet extends HttpServlet {
+
+    private final Logger LOGGER = Logger.getLogger(AuthAutoLoginServlet.class);
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -30,21 +40,46 @@ public class LogoutServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String url = Constants.logoutFeature.LOGIN_PAGE;
+        String url = Constants.AutoLoginFeature.LOGIN_PAGE;
+
+        boolean foundError = false;
         try {
-            HttpSession session = request.getSession(false);
-            if (session == null){
-                return;
-            }else{
-                session.invalidate();
-                Cookie[] cookies = request.getCookies();
+            //1. Get Coolies form request
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+
+                //2. Traverse all cookies to check authentication
                 for (Cookie cookie : cookies) {
-                    cookie.setMaxAge(0);
-                    response.addCookie(cookie);
-                }
+
+                    //3. Get username and password form name value
+                    String username = cookie.getName();
+                    String password = cookie.getValue();
+                    String hashedPassword = SecurityUtils.hashString(password);
+
+                    //4. call DAO to check authentication
+                    RegistrationDAO dao = new RegistrationDAO();
+                    RegistrationDTO result = dao.checkLogin(username, hashedPassword);
+                    if (result != null) {
+                        HttpSession session = request.getSession();
+                        session.setAttribute("USER", result);
+                        if (result.isRole()) {
+                            url = Constants.AutoLoginFeature.SEARCH_PAGE_ADMIN;
+                        } else {
+                            url = Constants.AutoLoginFeature.SEARCH_PAGE_USER;
+                        }
+                        break;
+                    }//end authentication is successfully checked
+                }//end for traverse cookies
+            }//end cookies is existes
+        } catch (SQLException | NamingException | NoSuchAlgorithmException ex) {
+            LOGGER.error(ex);
+            foundError = true;
+        } finally {
+            if (!foundError) {
+                response.sendRedirect(url);
+            } else {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
-        }finally{
-            response.sendRedirect(url);
         }
     }
 

@@ -5,6 +5,8 @@
  */
 package duyvtt.filter;
 
+
+import duyvtt.common.Constants;
 import duyvtt.registration.RegistrationDTO;
 import java.io.IOException;
 import java.util.Properties;
@@ -49,6 +51,7 @@ public class AuthorizationFilter implements Filter {
         boolean existedAuthenticatedUser = session != null && session.getAttribute("USER") != null;
         //get resource name
         String resouce = httpRequest.getServletPath().substring(1);
+        
         //get admin authentication properties
         Properties adminAuthProperties
                 = (Properties) context.getAttribute("ADMIN_AUTHENTICATION_LIST");
@@ -62,7 +65,7 @@ public class AuthorizationFilter implements Filter {
             if (existedAuthenticatedUser) {
                 RegistrationDTO user = (RegistrationDTO) session.getAttribute("USER");
                 boolean role = user.isRole();
-                if (role == true) {
+                if (role) {
                     chain.doFilter(request, response);
                 } else {
                     httpResponse.sendError(403);
@@ -72,20 +75,20 @@ public class AuthorizationFilter implements Filter {
             if (existedAuthenticatedUser) {
                 RegistrationDTO user = (RegistrationDTO) session.getAttribute("USER");
                 boolean role = user.isRole();
-                if (role == false) {
+                if (!role) {
                     chain.doFilter(request, response);
                 } else {
-                    httpResponse.sendError(httpResponse.SC_FORBIDDEN);
+                    httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
                 }
             }
         } else if ("login".equals(resouce)) {
             if (session != null && session.getAttribute("USER") != null) {
                 RegistrationDTO user = (RegistrationDTO) session.getAttribute("USER");
                 boolean role = user.isRole();
-                if (role == false) {
-                    httpResponse.sendRedirect("searchPageUser");
+                if (!role) {
+                    httpResponse.sendRedirect(Constants.FilterFeature.SEARCH_PAGE_USER);
                 } else {
-                    httpResponse.sendRedirect("searchPageAdmin");
+                    httpResponse.sendRedirect(Constants.FilterFeature.SEARCH_PAGE_ADMIN);
                 }
             }else{
                 chain.doFilter(request, response);

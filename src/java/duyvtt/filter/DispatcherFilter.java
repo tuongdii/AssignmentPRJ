@@ -39,26 +39,28 @@ public class DispatcherFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain)
             throws IOException, ServletException {
+        
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
+        
         //set header for response object
         httpResponse.setContentType("text/html;charset=UTF-8");
         httpResponse.setHeader("Cache-control", "no-cache, no-store");
         httpRequest.setCharacterEncoding("UTF-8");
 
-        String url = null;
         //get siteMap form Application Scope
         ServletContext context = httpRequest.getServletContext();
-        Properties siteMapProp = (Properties) context.getAttribute("SITE_MAP");
+        Properties siteMapProp = 
+                (Properties) context.getAttribute("SITE_MAP");
 
         String resource = httpRequest.getServletPath().substring(1);
 
-        url = siteMapProp.getProperty(resource);
+        String url = siteMapProp.getProperty(resource);
         if (url != null) {
             RequestDispatcher rd = httpRequest.getRequestDispatcher(url);
             rd.forward(request, response);
         } else {
-            httpResponse.sendError(httpResponse.SC_NOT_FOUND);
+            httpResponse.sendError(HttpServletResponse.SC_NOT_FOUND);
 
         }
 

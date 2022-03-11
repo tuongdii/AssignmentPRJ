@@ -24,9 +24,9 @@ import org.apache.log4j.Logger;
  *
  * @author DELL
  */
-public class RemoveItemsFromCartServlet extends HttpServlet {
+public class CartRemoveItemServlet extends HttpServlet {
 
-    private final Logger LOGGER = Logger.getLogger(RemoveItemsFromCartServlet.class);
+    private final Logger LOGGER = Logger.getLogger(CartRemoveItemServlet.class);
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -67,10 +67,10 @@ public class RemoveItemsFromCartServlet extends HttpServlet {
             foundError = false;
         } finally {
             if (foundError) {
-                response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             } else {
                 //6. refresh = call view cart again
-                response.sendRedirect(Constants.removeItemFeature.VIEW_CART_PAGE);
+                response.sendRedirect(Constants.RemoveItemFeature.VIEW_CART_PAGE);
             }
         }
     }

@@ -5,30 +5,20 @@
  */
 package duyvtt.controller;
 
-import duyvtt.registration.RegistrationDAO;
-import duyvtt.registration.RegistrationDTO;
 import duyvtt.common.Constants;
-import duyvtt.utils.SecurityUtils;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
-import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import org.apache.log4j.Logger;
 
 /**
  *
  * @author DELL
  */
-public class LoginServlet extends HttpServlet {
-
-    private final Logger LOGGER = Logger.getLogger(LoginServlet.class);
-
+public class AuthLogoutServlet extends HttpServlet {
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -40,47 +30,21 @@ public class LoginServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String username = request.getParameter("txtUsername");
-        String password = request.getParameter("txtPassword");
-        String url = Constants.loginFeature.INVALID_PAGE;
-        boolean foundError = false;
+        String url = Constants.LogoutFeature.LOGIN_PAGE;
         try {
-            String hashedPassword = SecurityUtils.hashString(password);
-            //call DAO -> new DAO object & call method of DAO
-            RegistrationDAO dao = new RegistrationDAO();
-            RegistrationDTO result = dao.checkLogin(username, hashedPassword);
-            if (result != null) {
-                // Create session and add RegistrationDTO attribute
-                HttpSession session = request.getSession();
-                session.setAttribute("USER", result);
-
-                //create account cookie for remind user
-                Cookie cookie = new Cookie(username, password);
-                cookie.setMaxAge(-1);   //means cookie existing until close browser
-                response.addCookie(cookie);
-
-                if (result.isRole() == true) {
-                    url = Constants.loginFeature.SEARCH_PAGE_ADMIN;
-                } else {
-                    url = Constants.loginFeature.SEARCH_PAGE_USER;
+            HttpSession session = request.getSession(false);
+            if (session == null){
+                return;
+            }else{
+                session.invalidate();
+                Cookie[] cookies = request.getCookies();
+                for (Cookie cookie : cookies) {
+                    cookie.setMaxAge(0);
+                    response.addCookie(cookie);
                 }
-
             }
-        } catch (SQLException ex) {
-            LOGGER.error(ex);
-            foundError = true;
-        } catch (NamingException ex) {
-            LOGGER.error(ex);
-            foundError = true;
-        } catch (NoSuchAlgorithmException ex) {
-            LOGGER.error(ex);
-        } finally {
-            if (foundError) {
-                response.sendError(response.SC_INTERNAL_SERVER_ERROR);
-            } else {
-                response.sendRedirect(url);
-            }
-
+        }finally{
+            response.sendRedirect(url);
         }
     }
 

@@ -49,7 +49,7 @@ public class CartCheckoutServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String fullname = request.getParameter("txtFullname");
-        String url = Constants.checkoutFeature.VIEW_CART;
+        String url = Constants.CheckoutFeature.VIEW_CART;
 
         ServletContext context = request.getServletContext();
         Properties prop = (Properties) context.getAttribute("SITE_MAP");
@@ -63,12 +63,14 @@ public class CartCheckoutServlet extends HttpServlet {
                 errors.setFullNameLengthErr("Full name is required form 2 to 50 chars");
                 foundError = true;
             }
+            
             if (foundError) {
-                url = Constants.checkoutFeature.CHECK_OUT;
+                url = Constants.CheckoutFeature.CHECK_OUT;
                 request.setAttribute("CHECKOUT_ERROR", errors);
             } else {
                 //1. staff goes to cart place
                 HttpSession session = request.getSession(false);
+                
                 if (session != null) {
                     //2. staff take customer's cart
                     CartObject cart = (CartObject) session.getAttribute("CART");
@@ -91,7 +93,7 @@ public class CartCheckoutServlet extends HttpServlet {
                                 OrderService service = new OrderService();
                                 boolean result = service.checkoutService(fullname, orderDetailList);
                                 if (result) {
-                                    url = Constants.checkoutFeature.SHOP_PAGE;
+                                    url = Constants.CheckoutFeature.SHOP_PAGE;
                                     request.setAttribute("CHECKOUT_INFO", "Checkout successfully!!");
                                     session.removeAttribute("CART");
                                 }
@@ -100,15 +102,12 @@ public class CartCheckoutServlet extends HttpServlet {
                     }
                 }
             }
-        } catch (SQLException ex) {
-            LOGGER.error(ex);
-            foundServerError = true;
-        } catch (NamingException ex) {
+        } catch (SQLException | NamingException ex) {
             LOGGER.error(ex);
             foundServerError = true;
         } catch (NotEnoughQuantityException ex) {
             LOGGER.error(ex);
-            url = Constants.checkoutFeature.VIEW_CART;
+            url = Constants.CheckoutFeature.VIEW_CART;
             errors.setNotEnoughQuantityErr( "Not enough " + ex.getMessage() + ". "
                     + "Please go to the shop page and check this product quantity!");
             request.setAttribute("CHECKOUT_ERROR", errors);
@@ -117,7 +116,7 @@ public class CartCheckoutServlet extends HttpServlet {
                 RequestDispatcher rq = request.getRequestDispatcher(prop.getProperty(url));
                 rq.forward(request, response);
             } else {
-                response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
         }
     }

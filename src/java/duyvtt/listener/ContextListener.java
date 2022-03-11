@@ -5,7 +5,6 @@
  */
 package duyvtt.listener;
 
-import duyvtt.common.AttributeName;
 import duyvtt.common.Constants;
 import duyvtt.utils.PropertiesFileUtils;
 import java.io.IOException;
@@ -25,7 +24,7 @@ public class ContextListener implements ServletContextListener {
     private final Logger LOGGER = Logger.getLogger(ContextListener.class);
     private void configLog4j(ServletContext context) {
         String log4jConfigFile 
-                = context.getInitParameter(Constants.initParam.LOG4J);
+                = context.getInitParameter(Constants.InitParam.LOG4J);
         String fullPath
                 = context.getRealPath("/") + log4jConfigFile;
 
@@ -36,48 +35,50 @@ public class ContextListener implements ServletContextListener {
     private void loadSiteMapsFile(ServletContext context) {
         try {
             String siteMapLocation
-                    = context.getInitParameter(Constants.initParam.SITEMAPS);
+                    = context.getInitParameter(Constants.InitParam.SITEMAPS);
             Properties siteMapProperty
                     = PropertiesFileUtils.getProperties(context, siteMapLocation);
-            context.setAttribute("SITE_MAP", siteMapProperty);
+            context.setAttribute("SITE_MAP",
+                    siteMapProperty);
         } catch (IOException ex) {
-            LOGGER.info(ex);
+            LOGGER.error(ex);
         }
     }
 
     private void loadAuthenticationFile(ServletContext context) {
         try {
             String authenticationLocation
-                    = context.getInitParameter(Constants.initParam.AUTHENTICATION);
+                    = context.getInitParameter(Constants.InitParam.AUTHENTICATION);
             Properties authenticationProperty
                     = PropertiesFileUtils.getProperties(context, authenticationLocation);
             context.setAttribute("AUTHENTICATION_LIST", authenticationProperty);
         } catch (IOException ex) {
-            LOGGER.info(ex);
+            LOGGER.error(ex);
         }
     }
 
     private void loadAdminAuthenticationFile(ServletContext context){
         try {
             String adminAuthenticationLocation
-                    = context.getInitParameter(Constants.initParam.ADMIN_AUTHOR);
+                    = context.getInitParameter(Constants.InitParam.ADMIN_AUTHOR);
             Properties adminAuthenticationProperty
                     = PropertiesFileUtils.getProperties(context, adminAuthenticationLocation);              
             context.setAttribute("ADMIN_AUTHENTICATION_LIST", adminAuthenticationProperty);
         } catch (IOException ex) {
-            LOGGER.info(ex);
+            LOGGER.error(ex);
         }
     }
     
     private void loadUserAuthenticationFile(ServletContext context){
         try {
             String userAuthenticationLocation
-                    = context.getInitParameter(Constants.initParam.USER_AUTHOR);
+                    = context.getInitParameter(Constants.InitParam.USER_AUTHOR);
             Properties userAuthenticationProperty
                     = PropertiesFileUtils.getProperties(context, userAuthenticationLocation);
-            context.setAttribute("USER_AUTHENTICATION_LIST", userAuthenticationProperty);
+            context.setAttribute("USER_AUTHENTICATION_LIST",
+                    userAuthenticationProperty);
         } catch (IOException ex) {
-            LOGGER.info(ex);
+            LOGGER.error(ex);
         }
     }
     @Override

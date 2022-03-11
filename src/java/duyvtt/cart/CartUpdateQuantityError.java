@@ -5,11 +5,13 @@
  */
 package duyvtt.cart;
 
+import java.io.Serializable;
+
 /**
  *
  * @author DELL
  */
-public class CartUpdateQuantityError {
+public class CartUpdateQuantityError implements Serializable{
     private String quantityInvalid;
     private String notEnoughQuantity;
 

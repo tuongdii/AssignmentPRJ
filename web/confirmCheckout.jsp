@@ -74,8 +74,8 @@
                                             </c:if>                    
                                             /><br>
                     <input type="submit" value="Checkout" name="btAction" />
-                    <a href="viewCart"><button>Cancel</button></a><br>
                 </form>
+                <a href="viewCart"><button>Cancel</button></a><br>
                 <c:if test="${not empty requestScope.CHECKOUT_ERROR.fullNameLengthErr}">
                     <font color="red">
                     ${requestScope.CHECKOUT_ERROR.fullNameLengthErr}

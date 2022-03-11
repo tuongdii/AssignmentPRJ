@@ -6,28 +6,27 @@
 package duyvtt.controller;
 
 import duyvtt.registration.RegistrationDAO;
-import duyvtt.registration.RegistrationDTO;
 import duyvtt.common.Constants;
-import duyvtt.utils.SecurityUtils;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.util.Properties;
 import javax.naming.NamingException;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
 /**
  *
  * @author DELL
  */
-public class AutoLoginServlet extends HttpServlet {
+public class AccountDeleteServlet extends HttpServlet {
 
-    private final Logger LOGGER = Logger.getLogger(AutoLoginServlet.class);
+    private final Logger LOGGER = Logger.getLogger(AccountDeleteServlet.class);
+   
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -40,49 +39,35 @@ public class AutoLoginServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String url = Constants.autoLoginFeature.LOGIN_PAGE;
+        String username = request.getParameter("username");
+        
         boolean foundError = false;
+        
+        ServletContext context = request.getServletContext();
+        Properties prop = (Properties) context.getAttribute("SITE_MAP");
+        
+        String url = Constants.DeleteAccountFeature.SEARCH_LATS_NAME_SERVLET;
         try {
-            //1. Get Coolies form request
-            Cookie[] cookies = request.getCookies();
-            if (cookies != null) {
-                //2. Traverse all cookies to check authentication
-                for (Cookie cookie : cookies) {
-                    //3. Get username and password form name value
-                    String username = cookie.getName();
-                    String password = cookie.getValue();
-                    String hashedPassword = SecurityUtils.hashString(password);
-                    //4. call DAO to check authentication
-                    RegistrationDAO dao = new RegistrationDAO();
-                    RegistrationDTO result = dao.checkLogin(username, hashedPassword);
-                    if (result != null) {
-                        HttpSession session = request.getSession();
-                        session.setAttribute("USER", result);
-                        if (result.isRole() == true) {
-                            url = Constants.autoLoginFeature.SEARCH_PAGE_ADMIN;
-                        } else {
-                            url = Constants.autoLoginFeature.SEARCH_PAGE_USER;
-                        }
-                        break;
-                    }//end authentication is successfully checked
-                }//end for traverse cookies
-            }//end cookies is existes
-        } catch (SQLException ex) {
-            LOGGER.error(ex);
+            //call DAO
+            RegistrationDAO dao = new RegistrationDAO();
+            boolean result = dao.deleteAccount(username);
+            if (result) {
+                String deleteInfo = username + " account has been deleted successfully.";
+                request.setAttribute("DELETE_INFO", deleteInfo);
+            }//end if delete successfully
+        } catch (SQLException | NamingException e) {
             foundError = true;
-        } catch (NamingException ex) {
-            LOGGER.error(ex);
-            foundError = true;
-        } catch (NoSuchAlgorithmException ex) {
-            LOGGER.error(ex);
-            foundError = true;
+            LOGGER.error(e);
         } finally {
             if (!foundError) {
-                response.sendRedirect(url);
+                RequestDispatcher rd = request.getRequestDispatcher(prop.getProperty(url));
+                rd.forward(request, response);
             } else {
-                response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
+            
         }
+        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

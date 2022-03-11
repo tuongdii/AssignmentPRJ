@@ -5,11 +5,13 @@
  */
 package duyvtt.controller;
 
-import duyvtt.registration.RegistrationDAO;
-import duyvtt.registration.RegistrationDTO;
+
+import duyvtt.product.ProductDAO;
+import duyvtt.product.ProductDTO;
 import duyvtt.common.Constants;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import javax.naming.NamingException;
@@ -19,16 +21,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
 /**
  *
  * @author DELL
  */
-public class SearchLastnameServlet extends HttpServlet {
+public class ShopLoadProductServlet extends HttpServlet {
 
-    private final Logger LOGGER = Logger.getLogger(SearchLastnameServlet.class);
+    private final Logger LOGGER = Logger.getLogger(ShopLoadProductServlet.class);
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -41,51 +42,25 @@ public class SearchLastnameServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String searchValue = request.getParameter("txtSearchValue");
+        String url = Constants.LoadProductFeature.SHOPPING_PAGE;
+
         ServletContext context = request.getServletContext();
         Properties prop = (Properties) context.getAttribute("SITE_MAP");
-        //get session
-        HttpSession session = request.getSession(false);
-        if (searchValue == null) {
-            searchValue = (String) session.getAttribute("SEARCH_VALUE");
-        }
-        //get user to check role
-        String url = Constants.searchLastnameFeature.SEARCH_PAGE_USER;
-        RegistrationDTO user = (RegistrationDTO) session.getAttribute("USER");
-        if (user.isRole() == true) {
-            url = Constants.searchLastnameFeature.SEARCH_PAGE_ADMIN;
-        }
+
         boolean foundError = false;
-        session.setAttribute("SEARCH_VALUE", searchValue);
         try {
-            if (!searchValue.trim().isEmpty()) {
-                //callDAO
-                RegistrationDAO dao = new RegistrationDAO();
-                dao.searchLastname(searchValue);
-                List<RegistrationDTO> result = dao.getAccounts();
-                if (result != null) {
-                    for (int i = 0; i < result.size(); i++) {
-                        if (result.get(i).getUsername().equals(user.getUsername())) {
-                            result.remove(result.get(i));
-                        }
-                    }
-                }
-                request.setAttribute("SEARCH_RESULT", result);
-            }
-
-        } catch (NamingException ex) {
+            ProductDAO dao = new ProductDAO();
+            List<ProductDTO> listProduct = dao.getProductList();
+            request.setAttribute("LIST_PRODUCT", listProduct);
+        } catch (SQLException | NamingException ex) {
             LOGGER.error(ex);
             foundError = true;
-        } catch (SQLException ex) {
-            LOGGER.error(ex);
-            foundError = true;
-
         } finally {
-            if (foundError) {
-                response.sendError(response.SC_INTERNAL_SERVER_ERROR);
-            } else {
+            if (!foundError) {
                 RequestDispatcher rd = request.getRequestDispatcher(prop.getProperty(url));
                 rd.forward(request, response);
+            } else {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
         }
     }

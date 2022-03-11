@@ -29,88 +29,100 @@
         <listener-class>duyvtt.listener.ContextListener</listener-class>
     </listener>
     <servlet>
-        <servlet-name>LoginServlet</servlet-name>
-        <servlet-class>duyvtt.controller.LoginServlet</servlet-class>
+        <servlet-name>AuthLoginServlet</servlet-name>
+        <servlet-class>duyvtt.controller.AuthLoginServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>SearchLastnameServlet</servlet-name>
-        <servlet-class>duyvtt.controller.SearchLastnameServlet</servlet-class>
+        <servlet-name>AccountSearchLastnameServlet</servlet-name>
+        <servlet-class>duyvtt.controller.AccountSearchLastnameServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateServlet</servlet-name>
-        <servlet-class>duyvtt.controller.UpdateServlet</servlet-class>
+        <servlet-name>AccountUpdateServlet</servlet-name>
+        <servlet-class>duyvtt.controller.AccountUpdateServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DeleteAccountServlet</servlet-name>
-        <servlet-class>duyvtt.controller.DeleteAccountServlet</servlet-class>
+        <servlet-name>AccountDeleteServlet</servlet-name>
+        <servlet-class>duyvtt.controller.AccountDeleteServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>LoadProductServlet</servlet-name>
-        <servlet-class>duyvtt.controller.LoadProductServlet</servlet-class>
+        <servlet-name>ShopLoadProductServlet</servlet-name>
+        <servlet-class>duyvtt.controller.ShopLoadProductServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>AddItemToCartServlet</servlet-name>
-        <servlet-class>duyvtt.controller.AddItemToCartServlet</servlet-class>
+        <servlet-name>CartAddItemServlet</servlet-name>
+        <servlet-class>duyvtt.controller.CartAddItemServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>RemoveItemsFromCartServlet</servlet-name>
-        <servlet-class>duyvtt.controller.RemoveItemsFromCartServlet</servlet-class>
+        <servlet-name>CartRemoveItemServlet</servlet-name>
+        <servlet-class>duyvtt.controller.CartRemoveItemServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>AutoLoginServlet</servlet-name>
-        <servlet-class>duyvtt.controller.AutoLoginServlet</servlet-class>
+        <servlet-name>AuthAutoLoginServlet</servlet-name>
+        <servlet-class>duyvtt.controller.AuthAutoLoginServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>RegisterServlet</servlet-name>
-        <servlet-class>duyvtt.controller.RegisterServlet</servlet-class>
+        <servlet-name>AuthRegisterServlet</servlet-name>
+        <servlet-class>duyvtt.controller.AuthRegisterServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>LogoutServlet</servlet-name>
-        <servlet-class>duyvtt.controller.LogoutServlet</servlet-class>
+        <servlet-name>AuthLogoutServlet</servlet-name>
+        <servlet-class>duyvtt.controller.AuthLogoutServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>CartCheckoutServlet</servlet-name>
         <servlet-class>duyvtt.controller.CartCheckoutServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>UpdateQuantityItemServlet</servlet-name>
-        <servlet-class>duyvtt.controller.UpdateQuantityItemServlet</servlet-class>
+        <servlet-name>CartUpdateQuantityServlet</servlet-name>
+        <servlet-class>duyvtt.controller.CartUpdateQuantityServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>LoginServlet</servlet-name>
-        <url-pattern>/LoginServlet</url-pattern>
+        <servlet-name>AuthLoginServlet</servlet-name>
+        <url-pattern>/AuthLoginServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>SearchLastnameServlet</servlet-name>
-        <url-pattern>/SearchLastnameServlet</url-pattern>
+        <servlet-name>AccountSearchLastnameServlet</servlet-name>
+        <url-pattern>/AccountSearchLastnameServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UpdateServlet</servlet-name>
-        <url-pattern>/UpdateServlet</url-pattern>
+        <servlet-name>AccountUpdateServlet</servlet-name>
+        <url-pattern>/AccountUpdateServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>DeleteAccountServlet</servlet-name>
-        <url-pattern>/DeleteAccountServlet</url-pattern>
+        <servlet-name>AccountDeleteServlet</servlet-name>
+        <url-pattern>/AccountDeleteServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>LoadProductServlet</servlet-name>
-        <url-pattern>/LoadProductServlet</url-pattern>
+        <servlet-name>ShopLoadProductServlet</servlet-name>
+        <url-pattern>/ShopLoadProductServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>AddItemToCartServlet</servlet-name>
-        <url-pattern>/AddItemToCartServlet</url-pattern>
+        <servlet-name>CartAddItemServlet</servlet-name>
+        <url-pattern>/CartAddItemServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>RemoveItemsFromCartServlet</servlet-name>
-        <url-pattern>/RemoveItemsFromCartServlet</url-pattern>
+        <servlet-name>CartRemoveItemServlet</servlet-name>
+        <url-pattern>/CartRemoveItemServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>AutoLoginServlet</servlet-name>
-        <url-pattern>/AutoLoginServlet</url-pattern>
+        <servlet-name>AuthAutoLoginServlet</servlet-name>
+        <url-pattern>/AuthAutoLoginServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>RegisterServlet</servlet-name>
-        <url-pattern>/RegisterServlet</url-pattern>
+        <servlet-name>AuthRegisterServlet</servlet-name>
+        <url-pattern>/AuthRegisterServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AuthLogoutServlet</servlet-name>
+        <url-pattern>/AuthLogoutServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CartCheckoutServlet</servlet-name>
+        <url-pattern>/CartCheckoutServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CartUpdateQuantityServlet</servlet-name>
+        <url-pattern>/CartUpdateQuantityServlet</url-pattern>
     </servlet-mapping>
     <context-param>
         <param-name>LOG4J_PROPERTIES_FILE_LOCATION</param-name>
@@ -132,18 +144,6 @@
         <param-name>USER_AUTHORIZATION_PROPERTIES_FILE_LOCATION</param-name>
         <param-value>WEB-INF\UserAuthorization.properties</param-value>
     </context-param>
-    <servlet-mapping>
-        <servlet-name>LogoutServlet</servlet-name>
-        <url-pattern>/LogoutServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>CartCheckoutServlet</servlet-name>
-        <url-pattern>/CartCheckoutServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>UpdateQuantityItemServlet</servlet-name>
-        <url-pattern>/UpdateQuantityItemServlet</url-pattern>
-    </servlet-mapping>
     <session-config>
         <session-timeout>
             30

@@ -22,9 +22,9 @@ import org.apache.log4j.Logger;
  *
  * @author DELL
  */
-public class UpdateServlet extends HttpServlet {
+public class AccountUpdateServlet extends HttpServlet {
 
-    private final Logger LOGGER = Logger.getLogger(UpdateServlet.class);
+    private final Logger LOGGER = Logger.getLogger(AccountUpdateServlet.class);
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -42,13 +42,16 @@ public class UpdateServlet extends HttpServlet {
         String lastname = request.getParameter("txtLastname");
         String checkAdmin = request.getParameter("chkAdmin");
         boolean isAdmin = false;
+        
         if (checkAdmin != null) {
             isAdmin = true;
         }
-        String url = Constants.updateAccountFeature.SEARCH_LATS_NAME_SERVLET;
+        
+        String url = Constants.UpdateAccountFeature.SEARCH_LATS_NAME_SERVLET;
 
         HttpSession session = request.getSession();
         RegistrationUpdateError error = new RegistrationUpdateError();
+        
         boolean foundError = false;
         boolean foundServerError = false;
         try {
@@ -72,8 +75,11 @@ public class UpdateServlet extends HttpServlet {
             LOGGER.error(e);
             foundServerError = true;
         } finally {
-            response.sendRedirect(url);
-
+            if (foundServerError) {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            } else {
+                response.sendRedirect(url);
+            }
         }
     }
 

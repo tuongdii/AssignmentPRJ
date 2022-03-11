@@ -5,6 +5,7 @@
  */
 package duyvtt.filter;
 
+import duyvtt.common.Constants;
 import java.io.IOException;
 import java.util.Properties;
 import javax.servlet.Filter;
@@ -37,29 +38,30 @@ public class AuthenticationFilter implements Filter {
             FilterChain chain) {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
+        
         try {
-
             //get authentication properties
             ServletContext context = httpRequest.getServletContext();
-            Properties authProperties = (Properties) context.getAttribute("AUTHENTICATION_LIST");
+            Properties authProperties = 
+                    (Properties) context.getAttribute("AUTHENTICATION_LIST");
 
             HttpSession session = httpRequest.getSession(false);
+            
             //get resource name 
             String resource = httpRequest.getServletPath().substring(1);
+            
             //check resource authentication
             String rule = (String) authProperties.getProperty(resource);
             if (rule != null && rule.equals("restricted")) {
                 if (session == null || session.getAttribute("USER") == null) {
-                    httpResponse.sendRedirect("login");
+                    httpResponse.sendRedirect(Constants.FilterFeature.LOGIN_PAGE);
                 } else {
                     chain.doFilter(request, response);
                 }
             } else {
                 chain.doFilter(request, response);
             }
-        } catch (IOException ex) {
-            LOGGER.error(ex);
-        } catch (ServletException ex) {
+        } catch (IOException | ServletException ex) {
             LOGGER.error(ex);
         }
 

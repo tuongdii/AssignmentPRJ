@@ -9,6 +9,7 @@ import duyvtt.orderDetail.OrderDetailDAO;
 import duyvtt.orderDetail.OrderDetailDTO;
 import duyvtt.orders.OrdersDAO;
 import duyvtt.utils.DBUtils;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -18,7 +19,7 @@ import javax.naming.NamingException;
  *
  * @author DELL
  */
-public class OrderService {
+public class OrderService implements Serializable{
     public boolean checkoutService(String fullname, List<OrderDetailDTO> orderDetailList) 
             throws SQLException, NamingException 
             {

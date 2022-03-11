@@ -23,9 +23,9 @@ import org.apache.log4j.Logger;
  *
  * @author DELL
  */
-public class RegisterServlet extends HttpServlet {
+public class AuthRegisterServlet extends HttpServlet {
 
-    private final Logger LOGGER = Logger.getLogger(RegisterServlet.class);
+    private final Logger LOGGER = Logger.getLogger(AuthRegisterServlet.class);
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -46,7 +46,7 @@ public class RegisterServlet extends HttpServlet {
         RegistrationInsertError errors = new RegistrationInsertError();
         boolean foundErr = false;
         boolean foundServerError = false;
-        String url = Constants.registerFeature.ERROR_PAGE;
+        String url = Constants.RegisterFeature.ERROR_PAGE;
 
         HttpSession session = request.getSession();
 
@@ -78,7 +78,7 @@ public class RegisterServlet extends HttpServlet {
                 RegistrationDAO dao = new RegistrationDAO();
                 boolean result = dao.insertAccount(dto);
                 if (result) {
-                    url = Constants.registerFeature.LOGIN_PAGE;
+                    url = Constants.RegisterFeature.LOGIN_PAGE;
                 }
             }
         } catch (SQLException ex) {
@@ -97,7 +97,7 @@ public class RegisterServlet extends HttpServlet {
             if (!foundServerError) {
                 response.sendRedirect(url);
             }else{
-                response.sendError(response.SC_INTERNAL_SERVER_ERROR);
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
             
         }

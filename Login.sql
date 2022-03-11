@@ -83,7 +83,7 @@ INSERT INTO Registration(username, password, lastname, isAdmin) VALUES ('C.V.T',
 GO
 INSERT INTO Registration(username, password, lastname, isAdmin) VALUES ('minh2571', '21c70385c4350b2ba165637ba7dc28e3', N'Hồng Minh', 0)
 GO
-SELECT * FROM Registration
+SELECT * FROM Product
 
 INSERT INTO Product (id, name, price, description, quantity)
 VALUES 
@@ -96,5 +96,5 @@ VALUES
 ('BOOK007', 'Tomcat', 150, 'Tomcat fundamentel book', 10),
 ('BOOK008', 'JSTL', 75, 'JSTL fundamentel book', 10)
 GO
-
+UPDATE Product SET quantity = 5 Where id = 'BOOK004'
 select * F

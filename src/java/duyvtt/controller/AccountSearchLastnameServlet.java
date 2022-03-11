@@ -5,10 +5,13 @@
  */
 package duyvtt.controller;
 
+
 import duyvtt.registration.RegistrationDAO;
+import duyvtt.registration.RegistrationDTO;
 import duyvtt.common.Constants;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Properties;
 import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
@@ -17,16 +20,16 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
 /**
  *
  * @author DELL
  */
-public class DeleteAccountServlet extends HttpServlet {
+public class AccountSearchLastnameServlet extends HttpServlet {
 
-    private final Logger LOGGER = Logger.getLogger(DeleteAccountServlet.class);
-   
+    private final Logger LOGGER = Logger.getLogger(AccountSearchLastnameServlet.class);
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -39,35 +42,53 @@ public class DeleteAccountServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String username = request.getParameter("username");
-        boolean foundError = false;
-        ServletContext context = request.getServletContext();
-        Properties prop = (Properties) context.getAttribute("SITE_MAP");
-        String url = Constants.deleteAccountFeature.SEARCH_LATS_NAME_SERVLET;
-        try {
-            //call DAO
-            RegistrationDAO dao = new RegistrationDAO();
-            boolean result = dao.deleteAccount(username);
-            if (result) {
-                String deleteInfo = username + " account has been deleted successfully.";
-                request.setAttribute("DELETE_INFO", deleteInfo);
-            }//end if delete successfully
-        } catch (SQLException e) {
-            foundError = true;
-            LOGGER.error(e);
-        } catch (NamingException e) {
-            foundError = true;
-            LOGGER.error(e);
-        } finally {
-            if (!foundError) {
-                RequestDispatcher rd = request.getRequestDispatcher(prop.getProperty(url));
-                rd.forward(request, response);
-            } else {
-                response.sendError(response.SC_INTERNAL_SERVER_ERROR);
-            }
-            
+        //get session
+        HttpSession session = request.getSession(false);
+        
+        //get search value
+        String searchValue = request.getParameter("txtSearchValue");
+        if (searchValue == null) {
+            searchValue = (String) session.getAttribute("SEARCH_VALUE");
         }
         
+        ServletContext context = request.getServletContext();
+        Properties prop = (Properties) context.getAttribute("SITE_MAP");
+        
+        //get user to check role
+        String url = Constants.SearchLastnameFeature.SEARCH_PAGE_USER;
+        RegistrationDTO user = (RegistrationDTO) session.getAttribute("USER");
+        if (user.isRole()) {
+            url = Constants.SearchLastnameFeature.SEARCH_PAGE_ADMIN;
+        }
+        boolean foundError = false;
+        session.setAttribute("SEARCH_VALUE", searchValue);
+        try {
+            if (!searchValue.trim().isEmpty()) {
+                //callDAO
+                RegistrationDAO dao = new RegistrationDAO();
+                dao.searchLastname(searchValue);
+                List<RegistrationDTO> result = dao.getAccounts();
+                if (result != null) {
+                    for (int i = 0; i < result.size(); i++) {
+                        if (result.get(i).getUsername().equals(user.getUsername())) {
+                            result.remove(result.get(i));
+                        }
+                    }
+                }
+                request.setAttribute("SEARCH_RESULT", result);
+            }
+
+        } catch (NamingException | SQLException ex) {
+            LOGGER.error(ex);
+            foundError = true;
+        }finally {
+            if (foundError) {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            } else {
+                RequestDispatcher rd = request.getRequestDispatcher(prop.getProperty(url));
+                rd.forward(request, response);
+            }
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
