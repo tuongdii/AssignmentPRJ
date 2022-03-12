@@ -65,10 +65,6 @@ END
 GO
 
 
-INSERT INTO Orders VALUES (N'Võ Thị Tường Duy', 0);
-INSERT INTO OrderDetail VALUES ( 1, 'BOOK001', 80, 10, 800)
-
-
 INSERT INTO Registration(username, password, lastname, isAdmin) VALUES ('tuongdii', '44c1bc87d6067efc72a3f7ba290cf297', N'Tường Duy', 1)
 GO
 INSERT INTO Registration(username, password, lastname, isAdmin) VALUES ('duynam', '6224818cfe08329f1c9d542b3eba96fa', N'Duy Nam', 0)
@@ -83,7 +79,7 @@ INSERT INTO Registration(username, password, lastname, isAdmin) VALUES ('C.V.T',
 GO
 INSERT INTO Registration(username, password, lastname, isAdmin) VALUES ('minh2571', '21c70385c4350b2ba165637ba7dc28e3', N'Hồng Minh', 0)
 GO
-SELECT * FROM Product
+
 
 INSERT INTO Product (id, name, price, description, quantity)
 VALUES 
@@ -96,5 +92,3 @@ VALUES
 ('BOOK007', 'Tomcat', 150, 'Tomcat fundamentel book', 10),
 ('BOOK008', 'JSTL', 75, 'JSTL fundamentel book', 10)
 GO
-UPDATE Product SET quantity = 5 Where id = 'BOOK004'
-select * F
